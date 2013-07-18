@@ -8,17 +8,35 @@ require_once "tidy.php";
 //                         Somehow I don't think I'll manage to get there though!
 $fetchFullQ = isset($_GET['full']) && $_GET['full'] === 'full';
 $fetchID = isset($_GET['id']) && is_string($_GET['id']) ? $_GET['id'] : '1FY1N9FN7CLX8';
+$renew = isset($_GET['renew']) && $_GET['renew'] === 'renew';
+
+$modes = array('default', 'datafile', 'sqlite');
+
+$mode = 'sqlite';
+if ( !in_array($mode, $modes, true) )
+    $mode = 'default';
 
 
-header("Content-type: text/xml; charset=utf-8");
+if ( $mode == 'default' ) {
+    $wish = new \Awl\Amazon_Wishlist_Fetcher;
+}
+if ( $mode == 'sqlite' ) {
+    $timeout = $renew ? 0 : 300600;
+    $fetcher = new \Awl\SQLiteFetcher(new PDO('sqlite:banaga.sqlite'), 'bang', $timeout);
+}
+if ( $mode == 'datafile' ) {
+    $fetcher = new \Awl\SerialisedFetcher("cacher.dat");
+}
+if ( $mode != 'default' ) {
+    $wish = new \Awl\Amazon_Wishlist_Fetcher($fetcher);
+}
 
-//$wish = new \Awl\Amazon_Wishlist_Fetcher;
-//$fetcher = new \Awl\SerialisedFetcher("cacher.dat");
-$fetcher = new \Awl\SQLiteFetcher(new PDO('sqlite:banaga.sqlite'), 'bang', 3600);
-$wish = new \Awl\Amazon_Wishlist_Fetcher($fetcher);
 $result = $wish->FetchWishlistPages($fetchID);
+
 if ( !$fetchFullQ )
     $result = $wish->PickUpInterestingBits($result);
+
+header("Content-type: text/xml; charset=utf-8");
 
 echo $result->saveXML();
 
