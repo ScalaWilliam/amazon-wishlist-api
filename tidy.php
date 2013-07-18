@@ -277,6 +277,15 @@ class URLFetcher implements Fetcher {
 		return file_get_contents_utf8($url);
 	}
 }
+function pretty(\DOMDocument $dom, $xslFile = 'xhtml.xsl') {
+
+    $xsl = new \DOMDocument;
+    $xsl->load($xslFile);
+
+    $proc = new \XSLTProcessor;
+    $proc->importStylesheet($xsl);
+    return $proc->transformToXml($dom);
+}
 
 class SQLiteFetcher extends URLFetcher {
     protected $__database;
