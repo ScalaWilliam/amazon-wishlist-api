@@ -8,6 +8,75 @@ namespace Awl;
  * Also use Tidy to clean up any nasty HTML.
  */
 
+class Amazon_MainImage_Fetcher {
+    protected $__fetcher;
+    protected $__tidier;
+
+    public function __construct(Fetcher $fetcher = null, Tidier $tidier = null) {
+        $this->__fetcher = $fetcher ? $fetcher : new URLFetcher;
+        $this->__tidier = $tidier ? $tidier : new Tidier();
+    }
+
+    public function getDOM($url) {
+        $tidier = clone $this->__tidier;
+        $html = $this->__fetcher->fetchURL($url);
+        if ( !$html ) return;
+        $xml = $tidier->TidyXML($html);
+        if ( !$xml ) return;
+        $dom = clone $tidier->XMLToDOM($xml);
+        return $dom;
+    }
+
+    public function FetchMainImage($id) {
+
+
+        if ( !ctype_alnum($id) )
+            throw new \Exception("Specified ID is invalid.");
+
+
+        $url = 'http://www.amazon.co.uk/dp/'.$id;
+
+        $dom = $this->getDOM($url);
+        if ( !$dom ) return;
+        $xpath = new \DOMXPath($dom);
+        $img = $xpath->query('//*[@id="main-image"]')->item(0);
+        if ( !$img ) return;
+        $src = $img->getAttribute('src');
+        if ( !$src ) return;
+        return $src;
+    }
+}
+class Amazon_MainImage_Addon {
+
+    protected $__fetcher;
+    protected $__tidier;
+
+    public function __construct(Fetcher $fetcher = null, Tidier $tidier = null) {
+        $this->__fetcher = $fetcher ? $fetcher : new URLFetcher;
+        $this->__tidier = $tidier ? $tidier : new Tidier();
+    }
+
+    public static function attachImage($item, \DOMDocument $dom, \DOMXPath $xpath, Amazon_MainImage_Fetcher $amma) {
+        $id = $xpath->query("*[local-name() = 'id' and namespace-uri() = 'urn:vynar:wishlist']", $item)->item(0);
+        if ( !$id ) return;
+        $imageURL = $amma->FetchMainImage($id->nodeValue);
+        if ( !$imageURL ) return;
+        $mainImageElement = $dom->createElementNS('urn:vynar:wishlist', 'wl:main-image');
+        $mainImageElement->appendChild($dom->createTextNode($imageURL));
+        $item->appendChild($mainImageElement);
+        return $mainImageElement;
+    }
+    public function AddOn(\DOMDocument $dom) {
+        $xpath = new \DOMXPath($dom);
+        $items = $xpath->query("//*[local-name() = 'item' and namespace-uri() = 'urn:vynar:wishlist']");
+        $mainimager = new Amazon_MainImage_Fetcher($this->__fetcher, $this->__tidier);
+        foreach($items as $item) {
+            $this->attachImage($item, $dom, $xpath, $mainimager);
+        }
+        return $dom;
+    }
+
+}
 class Amazon_Wishlist_Fetcher {
     protected $__fetcher;
     protected $__tidier;
@@ -67,7 +136,7 @@ class Amazon_Wishlist_Fetcher {
             return $parent->appendChild($element);
         return $element;
     }
-
+    static $priorities = array('lowest' => '1', 'low'=>'2', 'medium'=>'3', 'high'=>'4', 'highest'=>'5');
     public static function processPageItem(\DOMElement $item, \DOMXPath $xpath) {
 
         $dom = $item->ownerDocument;
@@ -99,8 +168,9 @@ class Amazon_Wishlist_Fetcher {
             }
 
         }
-        if ( $priorityText )
-            static::createWL('priority', $bit, null, $priorityText->nodeValue);
+        $priority = $priorityText ? $priorityText->nodeValue : null;
+        $priorityLevel = isset(static::$priorities[$priority]) ? static::$priorities[$priority] : 3;
+        static::createWL('priority', $bit, null, $priority)->setAttribute('level', $priorityLevel);
 
         return $bit;
     }
@@ -123,12 +193,6 @@ class Amazon_Wishlist_Fetcher {
     }
 
     public function FetchWishlistPages($id, Fetcher $fetcher = null, Tidier $tidier = null) {
-
-        if ( !isset($this) ) {
-            $wishlist = new static($fetcher, $tidier);
-            return $wishlist->FetchWishlistPages($id);
-        }
-
         if ( !ctype_alnum($id) )
             throw new \Exception("Specified ID is invalid.");
 
@@ -176,10 +240,6 @@ class Tidier {
 		$this->__dom = $dom ? $dom : new \DOMDocument("1.0", "UTF-8");
 	}
 	public function TidyXML($html, \tidy $tidy = null, \DOMDocument $dom = null) {
-		if ( !isset($this) ) {
-			$tidier = new static($tidy, $tidy, $dom);
-			return $tidier->TidyXML($html);
-		}
 		$config = array (
 			'indent' => false,
 			'input-xml'  => false,
@@ -194,12 +254,6 @@ class Tidier {
 		return $tidied;
 	}
 	public function XMLToDOM($xml, \DOMDocument $dom = null) {
-
-		if ( !isset($this) ) {
-			$tidier = new static(null, $dom);
-			return $tidier->XMLToDOM($xml);
-		}
-
 		if ($this->__dom->loadXML($xml))
 			return $this->__dom;
 	}
@@ -217,6 +271,58 @@ class URLFetcher implements Fetcher {
 	}
 }
 
+class SQLiteFetcher extends URLFetcher {
+    protected $__database;
+    protected $__table;
+    protected $__selectURL;
+    protected $__insertURL;
+    protected $__timeout;
+    protected static function selectURLSQL($table) {
+        return  'SELECT content FROM `'.$table.'`'." WHERE url = :url AND datetime > strftime('%s', 'now') - :timeout ORDER BY datetime DESC LIMIT 1";
+    }
+    protected static function insertURLSQL($table) {
+        return  'INSERT INTO `'.$table.'` (url, content, datetime) VALUES (:url, :content, strftime(\'%s\',\'now\'));';
+    }
+    public function __construct(\PDO $database, $table, $timeout = 0) {
+        $database->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        $this->__database = $database;
+        $this->__table = $table;
+
+        $this->__timeout = $timeout;
+
+        $tableExists = $database->query("SELECT name FROM sqlite_master WHERE type='table' AND name='{$table}'");
+        if ( !$tableExists->fetch() ) {
+            $database->query("CREATE TABLE '{$table}' (url text, datetime integer, content text)");
+        }
+
+        $selectURLSQL = static::selectURLSQL($table);
+        $insertURLSQL = static::insertURLSQL($table);
+        $this->__selectURL = $this->__database->prepare($selectURLSQL);
+        $this->__insertURL = $this->__database->prepare($insertURLSQL);
+        if ( !$this->__selectURL || !$this->__insertURL )
+            throw new \Exception("Something failed down.");
+
+
+    }
+    public function fetchURL($url) {
+        $params = array('url'=>$url, 'timeout'=>$this->__timeout);
+        $q = $this->__selectURL;
+        $q->execute($params);
+        $row = $q->fetch();
+        if ( $row ) {
+            return $row[0];
+        }
+        $content = parent::fetchURL($url);
+
+        // if it fails - fair enough - but we have to shove it in anyway!
+
+        $i = $this->__insertURL;
+        $params = array('url'=>$url, 'content' => $content);
+        $i->execute($params);
+        return $content;
+
+    }
+}
 class SerialisedFetcher implements Fetcher {
 
     protected $__filename;
