@@ -117,10 +117,13 @@ class Amazon_Wishlist_Fetcher {
     public function PickUpInterestingBits(\DOMDocument $dom) {
         $xpath = new \DOMXPath($dom);
         $items = $xpath->query("//*[local-name() = 'items' and namespace-uri() = 'urn:vynar:wishlist']")->item(0);
-        return $items;
+        $bam = new \DOMDocument("1.0", "UTF-8");
+        $bam->appendChild($bam->importNode($items, true));
+        return $bam;
     }
 
     public function FetchWishlistPages($id, Fetcher $fetcher = null, Tidier $tidier = null) {
+
         if ( !isset($this) ) {
             $wishlist = new static($fetcher, $tidier);
             return $wishlist->FetchWishlistPages($id);
@@ -146,7 +149,7 @@ class Amazon_Wishlist_Fetcher {
                 $url = null;
         }
 
-        $rootDocument = new \DOMDocument;
+        $rootDocument = new \DOMDocument("1.0","UTF-8");
         $rootDocument->loadXML('<index xmlns="urn:vynar:pageindex"></index>');
         foreach($pagesIndex as $url => $dom) {
             $html = $rootDocument->importNode($dom->documentElement, true);
@@ -170,7 +173,7 @@ class Tidier {
 	protected $__dom;
 	public function __construct(\tidy $tidy = null, \DOMDocument $dom = null) {
 		$this->__tidy = $tidy ? $tidy : new \tidy;
-		$this->__dom = $dom ? $dom : new \DOMDocument;
+		$this->__dom = $dom ? $dom : new \DOMDocument("1.0", "UTF-8");
 	}
 	public function TidyXML($html, \tidy $tidy = null, \DOMDocument $dom = null) {
 		if ( !isset($this) ) {
