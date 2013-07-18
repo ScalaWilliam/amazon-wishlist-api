@@ -201,18 +201,25 @@ class Amazon_Wishlist_Fetcher {
         $pagesIndex = array();
 
         while($url !== null) {
-            $dom = $this->getDOM($url);
-            if ( !$dom )
-                throw new Exception("Failed to load DOM for: '{$url}'");
+            list($dom, $url) = $this->processPage($url);
             $pagesIndex[$url] = $dom;
-            $url = $this->getNextPageLink($dom);
-            $dom->documentElement->setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
-            if ( $url && substr($url, 0, 1) == '/')
-                $url = 'http://www.amazon.co.uk'.$url;
-            if ( isset($pagesIndex[$url]))
-                $url = null;
         }
-
+        return static::composePagesIndex($pagesIndex);
+    }
+    public function processPage($url) {
+        $dom = $this->getDOM($url);
+        if ( !$dom )
+            throw new Exception("Failed to load DOM for: '{$url}'");
+        $pagesIndex[$url] = $dom;
+        $url = $this->getNextPageLink($dom);
+        $dom->documentElement->setAttribute('xmlns', 'http://www.w3.org/1999/xhtml');
+        if ( $url && substr($url, 0, 1) == '/')
+            $url = 'http://www.amazon.co.uk'.$url;
+        if ( isset($pagesIndex[$url]))
+            $url = null;
+        return array($dom, $url);
+    }
+    public function composePagesIndex($pagesIndex) {
         $rootDocument = new \DOMDocument("1.0","UTF-8");
         $rootDocument->loadXML('<index xmlns="urn:vynar:pageindex"></index>');
         foreach($pagesIndex as $url => $dom) {
