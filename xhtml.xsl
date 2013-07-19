@@ -18,7 +18,7 @@
                     <p>See the <a href="{wl:page[1]/wl:url}"><xsl:value-of select="wl:page[1]/wl:name"/> Wishlist on Amazon.co.uk</a></p>
                     <footer>
                         <p>Based on the <a href="https://vynar.com/2013/amazon-wishlist">Amazon Wishlist API.</a> Written in PHP5, DOM, XSLT 1.0, CSS3, JavaScript, SQLite.</p>
-                        <p><a href="?id={wl:id}&amp;data=data">View XML</a>, <a href="?id={wl:id}&amp;full=full">View semantic XHTML</a></p>
+                        <p><a href="?id={wl:id}&amp;data=data">View XML</a>, <a href="?id={wl:id}&amp;full=full">View semantic XHTML</a>, <a href="?id={wl:id}&amp;rss=rss">View RSS</a>.</p>
                     </footer>
                 </header>
                 <article id="Scroller">
@@ -31,8 +31,8 @@
                     <section id="poppy">
                         <div>
                         <h2>On your way to buy a gift for me?</h2>
-                        <p>I would be pleased to have:<br/> <a href="" target="_blank" data-id="name">This gift</a><br/> as a gift!</p>
-                        <p id="cta"><a href="">Click here to buy it for me!</a></p>
+                        <p>I would be pleased to have:<br/> <a href="" target="_blank" class="name">This gift</a><br/> as a gift!</p>
+                        <p id="cta"><a href="">Buy it</a></p>
                         <a id="poppy-hidey" target="_blank">&#171;</a>
                         </div>
                     </section>

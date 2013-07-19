@@ -1,31 +1,36 @@
+
 function Initialize() {
     container = document.getElementById("Scroller");
     version = detect();
-
     connectEvents();
-
-    var items = document.querySelectorAll('.items li a');
     var body = document.body;
     document.querySelector('#cta > a').setAttribute('href', document.querySelector('header > p > a').getAttribute('href'));
     var poppy = document.querySelector('#poppy');
-    function fun() {
-        var me = this === window ?  window.event.srcElement : this;
-        document.querySelector('body').setAttribute('class', 'poppy');
+    var body = document.querySelector('body');
+    var aname = poppy.querySelector('a.name');
+    clicky(document.querySelector("#poppy-hidey"),noPoppy);
+    clicky(document.querySelector("#poppy-bg"), noPoppy);
 
-        var title = me.querySelector('h2').textContent;
-        poppy.querySelector('a[data-id]').textContent = title;
-        poppy.querySelector('a[data-id]').setAttribute('href', me.getAttribute('href'));
-        var e = arguments[0] || window.event;
-        e.preventDefault();
-    }
-    clicky(document.querySelector("#poppy-hidey"), function() {
-        document.querySelector('body').setAttribute('class', '');
-    })
-    clicky(document.querySelector("#poppy-bg"), function() {
-        document.querySelector('body').setAttribute('class', '');
-    })
+    var items = document.querySelectorAll('.items li a');
     for ( var i= 0 ; i < items.length; i++ ) {
         clicky(items[i], fun);
+    }
+    function fun() {
+        var e = arguments.length ? arguments[0] : window.event;
+        var me = this === window ?  window.event.srcElement : this;
+
+        var title = me.querySelector('h2').textContent;
+        aname.textContent = title;
+        aname.setAttribute('href', me.getAttribute('href'));
+        e.preventDefault();
+        herePoppy();
+        return false;
+    }
+    function noPoppy() {
+        body.setAttribute('class', '');
+    }
+    function herePoppy() {
+        body.setAttribute('class', 'poppy');
     }
 }
 
@@ -111,7 +116,7 @@ function mouseWheel(e) {
 
 function connectMouseWheel() {
     var body = document.querySelector("body");
-    if ( version.UA != "MSIE") {
+    if ( !(version && "UA" in version && version.UA == "MSIE") ) {
         if ("onmousewheel" in body) {
             body.addEventListener("mousewheel", mouseWheel, false);
         }

@@ -200,6 +200,20 @@ class Amazon_Wishlist_Fetcher {
             }
         }
 
+        $xpath->registerNamespace('x', 'http://www.w3.org/1999/xhtml');
+        $addedWhen = $xpath->query('.//td[contains(@class, "lineItemOwnerInfoJS")]//nobr', $item)->item(0);
+        if ( $addedWhen && preg_match('/^Added (.*)$/i', $addedWhen->textContent, $m) != 0 ) {
+            $addedWhen->childNodes->item(0)->nodeValue = 'Added ';
+            $addedWhenWI = $dom->createElementNS($ns, 'wi:added');
+            $addedWhen->appendChild($addedWhenWI);
+            $date = $m[1];
+            $time = strtotime($date);
+            $addedWhenWI->appendChild($dom->createTextNode($date));
+            $addedWhenWI->setAttributeNS($ns, 'wi:atom', date(DATE_ATOM, $time));
+            $addedWhenWI->setAttributeNS($ns, 'wi:rss', date(DATE_RSS, $time));
+            $addedWhenWI->setAttributeNS($ns, 'wi:rfc', date(DATE_RFC822, $time));
+        }
+
         $priorityText  = $xpath->query("(.//*[@class='priorityValueText']/text())[1]", $item)->item(0);
         $priorityNode = $item->ownerDocument->createElementNS($ns, 'wi:priority');
         if ( $priorityText ) {
