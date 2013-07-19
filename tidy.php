@@ -51,24 +51,26 @@ class Amazon_MainImage_Addon {
     protected $__fetcher;
     protected $__tidier;
 
+    static $namespace = "https://vynar.com/2013/amazon-wishlist";
+
     public function __construct(Fetcher $fetcher = null, Tidier $tidier = null) {
         $this->__fetcher = $fetcher ? $fetcher : new URLFetcher;
         $this->__tidier = $tidier ? $tidier : new Tidier();
     }
 
     public static function attachImage($item, \DOMDocument $dom, \DOMXPath $xpath, Amazon_MainImage_Fetcher $amma) {
-        $id = $xpath->query("*[local-name() = 'id' and namespace-uri() = 'urn:vynar:wishlist']", $item)->item(0);
+        $id = $xpath->query("*[local-name() = 'id' and namespace-uri() = '".static::$namespace."']", $item)->item(0);
         if ( !$id ) return;
         $imageURL = $amma->FetchMainImage($id->nodeValue);
         if ( !$imageURL ) return;
-        $mainImageElement = $dom->createElementNS('urn:vynar:wishlist', 'wl:main-image');
+        $mainImageElement = $dom->createElementNS(static::$namespace, 'wl:main-image');
         $mainImageElement->appendChild($dom->createTextNode($imageURL));
         $item->appendChild($mainImageElement);
         return $mainImageElement;
     }
     public function AddOn(\DOMDocument $dom) {
         $xpath = new \DOMXPath($dom);
-        $items = $xpath->query("//*[local-name() = 'item' and namespace-uri() = 'urn:vynar:wishlist']");
+        $items = $xpath->query("//*[local-name() = 'item' and namespace-uri() = '".static::$namespace."']");
         $mainimager = new Amazon_MainImage_Fetcher($this->__fetcher, $this->__tidier);
         foreach($items as $item) {
             $this->attachImage($item, $dom, $xpath, $mainimager);
@@ -80,7 +82,7 @@ class Amazon_MainImage_Addon {
 class Amazon_Wishlist_Fetcher {
     protected $__fetcher;
     protected $__tidier;
-
+    static $namespace = "https://vynar.com/2013/amazon-wishlist";
     public function __construct(Fetcher $fetcher = null, Tidier $tidier = null) {
         $this->__fetcher = $fetcher ? $fetcher : new URLFetcher;
         $this->__tidier = $tidier ? $tidier : new Tidier();
@@ -110,7 +112,7 @@ class Amazon_Wishlist_Fetcher {
         $xpath = new \DOMXPath($dom);
 
 
-        $ns = 'urn:vynar:wishlist';
+        $ns = static::$namespace;
 
         $aboutMe = $xpath->query('//*[@id="profile-description-visitor-Field"]/text()')->item(0);
         if ( $aboutMe ) {
@@ -165,7 +167,7 @@ class Amazon_Wishlist_Fetcher {
         $dom = $item->ownerDocument;
 
 
-        $ns = 'urn:vynar:wishlist';
+        $ns = static::$namespace;
         $itemNode = $dom->createElementNS($ns, 'wi:item');
         $item->parentNode->replaceChild($itemNode, $item);
         $itemNode->appendChild($item);
@@ -209,7 +211,7 @@ class Amazon_Wishlist_Fetcher {
         $priority = $priorityText ? $priorityText->nodeValue : null;
 
         $priorityLevel = isset(static::$priorities[$priority]) ? static::$priorities[$priority] : 3;
-        $priorityNode->setAttributeNS('urn:vynar:wishlist', 'wi:level', (string)$priorityLevel);
+        $priorityNode->setAttributeNS($ns, 'wi:level', (string)$priorityLevel);
 
 
         $priceText     = $xpath->query("(.//*[@class='wlPriceBold']/*/text())[1]",          $item)->item(0);
@@ -235,7 +237,7 @@ class Amazon_Wishlist_Fetcher {
                 throw new Exception("No document specified");
             }
         }
-        $element = $document->createElementNS('urn:vynar:wishlist', 'wl:'.$name);
+        $element = $document->createElementNS(static::$namespace, 'wl:'.$name);
         if ( $text )
             $element->appendChild($document->createTextNode($text));
         if ( $parent )
@@ -338,7 +340,7 @@ class Amazon_Wishlist_Fetcher {
     }
     public function composePagesIndex($pagesIndex) {
         $rootDocument = new \DOMDocument("1.0","UTF-8");
-        $ns = 'urn:vynar:wishlist';
+        $ns = static::$namespace;
         $rootDocument->loadXML('<wishlist xmlns="'.$ns.'"></wishlist>');
         foreach($pagesIndex as $url => $dom) {
 

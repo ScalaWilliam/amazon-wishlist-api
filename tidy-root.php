@@ -37,20 +37,19 @@ if ( $mode != 'default' ) {
     $wish = new \Awl\Amazon_Wishlist_Fetcher($fetcher);
 }
 
-$result = $wish->FetchWishlistPages($fetchID);
-
-if (!$fetchFullQ)
-    $result = $wish->PickUpInterestingBits($result);
-
 header("Content-type: text/xml; charset=utf-8");
 
-
-if ( !$ashtml ) {
-    $xml = $result->saveXML();
-    echo $xml;
-} else {
-    $xhtml = \Awl\pretty($result);
+$result = $wish->FetchWishlistPages($fetchID);
+$slim = $wish->PickUpInterestingBits($result);
+if ($ashtml) {
+    $xhtml = \Awl\pretty($slim);
     echo $xhtml->saveXML();
+} elseif ( $fetchFullQ ) {
+    echo $result->saveXML();
+} else {
+    echo $slim->saveXML();
 }
+
+
 
 ?>

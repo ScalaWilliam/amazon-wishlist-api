@@ -20,6 +20,7 @@ li {
     background-color:lightslategray;
     height:10em;
     position:relative;
+    box-shadow: 1px 1px 3px #333;
 }
 @media only screen and (max-width:960px){
     li:nth-child(2n) {
