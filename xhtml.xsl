@@ -21,6 +21,7 @@
                 </ol>
                 <footer>
                     <p>Based on the <a href="https://vynar.com/2013/amazon-wishlist">Amazon Wishlist API.</a> Written in PHP5, DOM, XSLT 1.0, CSS, SQLite.</p>
+                    <p><a href="?id={wl:id}&amp;data=data">View XML</a>, <a href="?id={wl:id}&amp;full=full">View semantic XHTML</a></p>
                 </footer>
             </body>
         </html>
@@ -38,7 +39,7 @@
     </xsl:template>
     <xsl:template match="@*|node()">
         <xsl:copy>
-            <xsl:apply-templates/>>
+            <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
 </xsl:stylesheet>

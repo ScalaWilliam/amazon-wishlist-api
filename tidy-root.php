@@ -9,7 +9,7 @@ require_once "tidy.php";
 $fetchFullQ = isset($_GET['full']) && $_GET['full'] === 'full';
 $fetchID = isset($_GET['id']) && is_string($_GET['id']) ? $_GET['id'] : '1FY1N9FN7CLX8';
 $renew = isset($_GET['renew']) && $_GET['renew'] === 'renew';
-$ashtml = isset($_GET['html']) && $_GET['html'] === 'html';
+$data = isset($_GET['data']) && $_GET['data'] === 'data';
 
 $modes = array('default', 'datafile', 'sqlite');
 
@@ -41,13 +41,13 @@ header("Content-type: text/xml; charset=utf-8");
 
 $result = $wish->FetchWishlistPages($fetchID);
 $slim = $wish->PickUpInterestingBits($result);
-if ($ashtml) {
-    $xhtml = \Awl\pretty($slim);
-    echo $xhtml->saveXML();
+if ($data) {
+    echo $slim->saveXML();
 } elseif ( $fetchFullQ ) {
     echo $result->saveXML();
 } else {
-    echo $slim->saveXML();
+    $xhtml = \Awl\pretty($slim);
+    echo $xhtml->saveXML();
 }
 
 

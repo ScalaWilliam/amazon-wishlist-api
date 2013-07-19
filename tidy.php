@@ -6,6 +6,7 @@ namespace Awl;
  * Use a bit of dependency injection
  * And make use of PHP's DOM functionality
  * Also use Tidy to clean up any nasty HTML.
+ * TODO: needs cleanup
  */
 
 class Amazon_MainImage_Fetcher {
@@ -323,7 +324,7 @@ class Amazon_Wishlist_Fetcher {
             list($dom, $url) = $this->processPage($url);
             $pagesIndex[$origUrl] = $dom;
         }
-        return static::composePagesIndex($pagesIndex);
+        return static::composePagesIndex($pagesIndex, $id);
     }
     public function processPage($url) {
         $dom = $this->getDOM($url);
@@ -338,10 +339,12 @@ class Amazon_Wishlist_Fetcher {
             $url = null;
         return array($dom, $url);
     }
-    public function composePagesIndex($pagesIndex) {
+    public function composePagesIndex($pagesIndex, $id) {
         $rootDocument = new \DOMDocument("1.0","UTF-8");
         $ns = static::$namespace;
         $rootDocument->loadXML('<wishlist xmlns="'.$ns.'"></wishlist>');
+        $idElement = $rootDocument->createElementNS($ns, 'id', $id);
+        $rootDocument->documentElement->appendChild($idElement);
         foreach($pagesIndex as $url => $dom) {
 
             $page = $rootDocument->documentElement->appendChild($rootDocument->createElementNS($ns, 'wi:page'));
