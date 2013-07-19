@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL);
-require_once "tidy.php";
+require_once "awl.inc.php";
 \awl\encoding();
 
 // Ubuntu: sudo apt-get install php5-tidy
