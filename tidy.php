@@ -106,7 +106,127 @@ class Amazon_Wishlist_Fetcher {
         }
         return $itemsa;
     }
+    public static function semanticise(\DOMDocument $dom) {
+        $xpath = new \DOMXPath($dom);
 
+
+        $ns = 'urn:vynar:wishlist';
+
+        $aboutMe = $xpath->query('//*[@id="profile-description-visitor-Field"]/text()')->item(0);
+        if ( $aboutMe ) {
+            if ( $aboutMe->nodeValue != 'Nothing entered' && trim($aboutMe->nodeValue) != '' ) {
+                $aboutMeNode = $dom->createElementNS($ns, 'wi:about');
+                $aboutMe->parentNode->replaceChild($aboutMeNode, $aboutMe);
+                $aboutMeNode->appendChild($aboutMe);
+            }
+        }
+        $birthday = $xpath->query('//*[@id="profile-birthday-Field"]/text()')->item(0);
+        if ( $birthday ) {
+            if ( $birthday->nodeValue != 'None entered' && trim($birthday->nodeValue) != '') {
+                $birthdayNode = $dom->createElementNS($ns, 'wi:birthday');
+                $birthday->parentNode->replaceChild($birthdayNode, $birthday);
+                $birthdayNode->appendChild($birthday);
+            }
+        }
+        $address = $xpath->query('//*[@id="profile-address-Field"]/text()')->item(0);
+        if ( $address ) {
+            if ( $address->nodeValue != 'None entered' && trim($address->nodeValue) != '') {
+                $addressNode = $dom->createElementNS($ns, 'wi:address');
+                $address->parentNode->replaceChild($addressNode, $address);
+                $addressNode->appendChild($address);
+            }
+        }
+        $name = $xpath->query('//*[@id="profile-name-Field"]/text()')->item(0);
+        if ( $name ) {
+            if ( $name->nodeValue != 'None entered' && trim($name->nodeValue) != '') {
+                $nameNode = $dom->createElementNS($ns, 'wi:name');
+                $name->parentNode->replaceChild($nameNode, $name);
+                $nameNode->appendChild($name);
+            }
+        }
+        $title = $xpath->query('//*[local-name()="H1" and @class="visitor"]/text()')->item(0);
+        if ( $title ) {
+            if ( $title->nodeValue != 'None entered') {
+                $titleNode = $dom->createElementNS($ns, 'wi:title');
+                $title->parentNode->replaceChild($titleNode, $title);
+                $titleNode->appendChild($title);
+            }
+        }
+
+        $items = $xpath->query('//tbody[@class="itemWrapper"]');
+        $result = array();
+        foreach($items as $item) {
+            $result[] = static::processItemX($item, $xpath);
+        }
+        return $result;
+    }
+    public static function processItemX(\DOMElement $item, \DOMXPath $xpath) {
+
+        $dom = $item->ownerDocument;
+
+
+        $ns = 'urn:vynar:wishlist';
+        $itemNode = $dom->createElementNS($ns, 'wi:item');
+        $item->parentNode->replaceChild($itemNode, $item);
+        $itemNode->appendChild($item);
+
+
+        $hrefAttribute = $xpath->query("(.//*[@class='small productTitle']/*/*/@href)",     $item)->item(0);
+        if ( $hrefAttribute ) {
+            $link = $hrefAttribute->nodeValue;
+            $linkNode = $item->ownerDocument->createElementNS($ns, 'wi:link');
+            $linkTextNode = $item->ownerDocument->createTextNode($link);
+            $item->appendChild($linkNode)->appendChild($linkTextNode);
+        }
+
+        $titleText     = $xpath->query("(.//*[@class='small productTitle']/*/*/text())[1]", $item)->item(0);
+        if ( $titleText ) {
+            $titleNode = $item->ownerDocument->createElementNS($ns, 'wi:title');
+            $titleText->parentNode->replaceChild($titleNode, $titleText);
+            $titleNode->appendChild($titleText);
+        }
+        $imageElement  = $xpath->query("(.//*[@class='productImage']/*/*[local-name()='img'])[1]", $item)->item(0);
+        if ( $imageElement ) {
+            $destImage = $item->ownerDocument->createElementNS($ns, 'wi:image');
+            $imageElement->parentNode->insertBefore($destImage, $imageElement->nextSibling);
+            foreach(array('width', 'height', 'alt', 'src') as $attName) {
+                $attValue = $imageElement->getAttribute($attName);
+                if ( $attValue ) {
+                    $destImage->setAttributeNS($ns, 'wi:'.$attName, $attValue);
+                }
+            }
+        }
+
+        $priorityText  = $xpath->query("(.//*[@class='priorityValueText']/text())[1]", $item)->item(0);
+        $priorityNode = $item->ownerDocument->createElementNS($ns, 'wi:priority');
+        if ( $priorityText ) {
+            $priorityText->parentNode->replaceChild($priorityNode, $priorityText);
+            $priorityNode->appendChild($priorityText);
+        } else {
+            $item->appendChild($priorityNode);
+        }
+
+        $priority = $priorityText ? $priorityText->nodeValue : null;
+
+        $priorityLevel = isset(static::$priorities[$priority]) ? static::$priorities[$priority] : 3;
+        $priorityNode->setAttributeNS('urn:vynar:wishlist', 'wi:level', (string)$priorityLevel);
+
+
+        $priceText     = $xpath->query("(.//*[@class='wlPriceBold']/*/text())[1]",          $item)->item(0);
+
+        if ( $priceText ) {
+            $priceNode = $item->ownerDocument->createElementNS($ns, 'wi:price');
+            $priceText->parentNode->replaceChild($priceNode, $priceText);
+            $priceNode->appendChild($priceText);
+        }
+        $nameAttribute = $xpath->query("@name", $item)->item(0);
+        if ( $hrefAttribute && preg_match('/dp\/([A-Z0-9]+)\//', $hrefAttribute->nodeValue, $m) )
+            static::createWL('id', $item, null, $m[1]);
+        if ( $nameAttribute )
+            static::createWL('name', $item, null, $nameAttribute->nodeValue);
+
+        return $item;
+    }
     public static function createWL($name, $parent = null, \DOMDocument $document = null, $text = null) {
         if ( !$document ) {
             if ( $parent ) {
@@ -174,7 +294,6 @@ class Amazon_Wishlist_Fetcher {
 
         return $bit;
     }
-
     public function getDOM($url) {
         $html = $this->__fetcher->fetchURL($url);
         if ( !$html ) return;
@@ -185,11 +304,8 @@ class Amazon_Wishlist_Fetcher {
     }
 
     public function PickUpInterestingBits(\DOMDocument $dom) {
-        $xpath = new \DOMXPath($dom);
-        $items = $xpath->query("//*[local-name() = 'items' and namespace-uri() = 'urn:vynar:wishlist']")->item(0);
-        $bam = new \DOMDocument("1.0", "UTF-8");
-        $bam->appendChild($bam->importNode($items, true));
-        return $bam;
+        $result = pretty($dom, 'extract-useful.xsl');
+        return $result;
     }
 
     public function FetchWishlistPages($id, Fetcher $fetcher = null, Tidier $tidier = null) {
@@ -201,8 +317,9 @@ class Amazon_Wishlist_Fetcher {
         $pagesIndex = array();
 
         while($url !== null) {
+            $origUrl = $url;
             list($dom, $url) = $this->processPage($url);
-            $pagesIndex[$url] = $dom;
+            $pagesIndex[$origUrl] = $dom;
         }
         return static::composePagesIndex($pagesIndex);
     }
@@ -221,14 +338,18 @@ class Amazon_Wishlist_Fetcher {
     }
     public function composePagesIndex($pagesIndex) {
         $rootDocument = new \DOMDocument("1.0","UTF-8");
-        $rootDocument->loadXML('<index xmlns="urn:vynar:pageindex"></index>');
+        $ns = 'urn:vynar:wishlist';
+        $rootDocument->loadXML('<wishlist xmlns="'.$ns.'"></wishlist>');
         foreach($pagesIndex as $url => $dom) {
+
+            $page = $rootDocument->documentElement->appendChild($rootDocument->createElementNS($ns, 'wi:page'));
+            $page->appendChild($rootDocument->createElementNS($ns, 'wi:url'))->appendChild($rootDocument->createTextNode($url));
             $html = $rootDocument->importNode($dom->documentElement, true);
-            $rootDocument->documentElement->appendChild($html);
-            $html->setAttributeNS('urn:vynar:pageindex', 'pi:url', $url);
+            $page->appendChild($html);
         }
-        $items = static::getPageItems($rootDocument);
-        $rootDocument->documentElement->appendChild($items);
+
+        static::semanticise($rootDocument);
+
         return $rootDocument;
     }
 }
@@ -284,7 +405,7 @@ function pretty(\DOMDocument $dom, $xslFile = 'xhtml.xsl') {
 
     $proc = new \XSLTProcessor;
     $proc->importStylesheet($xsl);
-    return $proc->transformToXml($dom);
+    return $proc->transformToDoc($dom);
 }
 
 class SQLiteFetcher extends URLFetcher {

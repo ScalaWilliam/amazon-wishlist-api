@@ -39,7 +39,7 @@ if ( $mode != 'default' ) {
 
 $result = $wish->FetchWishlistPages($fetchID);
 
-if ( !$fetchFullQ )
+if (!$fetchFullQ)
     $result = $wish->PickUpInterestingBits($result);
 
 header("Content-type: text/xml; charset=utf-8");
@@ -50,7 +50,7 @@ if ( !$ashtml ) {
     echo $xml;
 } else {
     $xhtml = \Awl\pretty($result);
-    echo $xhtml;
+    echo $xhtml->saveXML();
 }
 
 ?>
