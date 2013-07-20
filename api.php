@@ -72,7 +72,6 @@ if ( $mode != 'default' ) {
     $wish = new \Awl\Amazon_Wishlist_Fetcher($fetcher);
 }
 
-header("Content-type: text/xml; charset=utf-8");
 //header("Content-type: text/plain; charset=utf-8");
 
 $combined = $wish->FetchWishlistPages($fetchID);
@@ -91,17 +90,21 @@ $xml = $xhtml = $atom = $rss = null;
 
 
 if ( $feed === 'rss') {
+    header("Content-type: application/rss+xml; charset=utf-8");
     $rss = \Awl\transform($slim, 'rss.xsl');
     echo $rss->saveXML();
 } elseif ( $feed === 'atom' ) {
+    header("Content-type: application/atom+xml; charset=utf-8");
     $atom = \Awl\transform($slim, 'atom.xsl');
     echo $atom->saveXML();
 } elseif ($data) {
+    header("Content-type: text/xml; charset=utf-8");
     echo $slim->saveXML();
 } elseif ( $fetchFullQ ) {
+    header("Content-type: text/xml; charset=utf-8");
     echo $semantic->saveXML();
 } else {
-
+    header("Content-type: application/xhtml+xml; charset=utf-8");
     if ( !defined('_AWL_XHTML') )
         define('_AWL_XHTML', 'xhtml.xsl');
     $xhtml = \Awl\transform($slim, _AWL_XHTML);

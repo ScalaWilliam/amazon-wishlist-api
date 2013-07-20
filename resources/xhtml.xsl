@@ -5,6 +5,7 @@
         <xsl:text disable-output-escaping='yes'>&lt;!DOCTYPE html&gt;</xsl:text>
         <html>
             <head>
+                <meta charset="utf-8"/>
                 <title>My Wishlist</title>
                 <link href="sexy/xhtml-wishlist.css" rel="stylesheet" type="text/css"/>
                 <script src="sexy/xhtml-scroll.js" type="text/javascript"></script>
@@ -58,7 +59,7 @@
                             <xsl:otherwise><xsl:value-of select="wl:image/@wl:src"/></xsl:otherwise>
                         </xsl:choose>
                     </xsl:variable>
-                    <img src="{$image}"/>
+                    <img src="{$image}" alt="{wl:title}"/>
                     <span class="background" style="background-image:url('{$image}')"></span>
                 </figure>
                 <xsl:if test="wl:price">

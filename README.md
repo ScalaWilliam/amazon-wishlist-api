@@ -1,6 +1,6 @@
 Amazon Wishlist Scraper API
 ====
-A PHP5 based Amazon Wishlist API with supporting examples and code around it.
+A PHP5 based Amazon Wishlist Scraper API with supporting examples and code around it.
 
 Developed By [William Narmontas](https://vynar.com/)
 
@@ -97,7 +97,7 @@ __Force re-newal of SQLite database__:
 __Request semantic XML data:__
 
  * https://vynar.com/2013/amazon-wishlist/api.php?full=full
- * Sampled: https://vynar.com/2013/amazon-wishlist/samples/A.combined.xml
+ * Sampled: https://vynar.com/2013/amazon-wishlist/samples/B.semantic.xml
 
 __Request raw XML data:__
 
