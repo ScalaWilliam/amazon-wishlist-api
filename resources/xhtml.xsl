@@ -58,7 +58,6 @@
                             <xsl:otherwise><xsl:value-of select="wl:image/@wl:src"/></xsl:otherwise>
                         </xsl:choose>
                     </xsl:variable>
-                    <xsl:copy-of select="wl:image"/>
                     <img src="{$image}"/>
                     <span class="background" style="background-image:url('{$image}')"></span>
                 </figure>
