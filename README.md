@@ -43,10 +43,21 @@ Request the Atom feed:
 
  * https://vynar.com/2013/amazon-wishlist/api.php?feed=atom
 
-### Development: ###
+Use cases
+___
+
+This application can be used:
+
+ * As a back-end API for collecting information about your Amazon Wishlist.
+ * As a front-end site. It works with tablets (iPad, Android) and desktop browsers (IE10, Chrome, Opera).
+ * As a plug-in for your personal site.
 
 
-Once you've got the API running in your hosting environment, comment the following line in api.php:
+Development
+___
+
+
+Everything that you need to know is located in 'api.php' Once you've got the API running in your hosting environment, comment the following line in 'api.php':
 
 ~~~php
 $protect = false;

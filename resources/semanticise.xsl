@@ -43,10 +43,10 @@
             <xsl:variable name="level">
                 <xsl:choose>
                     <xsl:when test="$priority = 'highest'">5</xsl:when>
-                    <xsl:when test="$priority = 'highest'">4</xsl:when>
-                    <xsl:when test="$priority = 'highest'">3</xsl:when>
-                    <xsl:when test="$priority = 'highest'">2</xsl:when>
-                    <xsl:when test="$priority = 'highest'">1</xsl:when>
+                    <xsl:when test="$priority = 'high'">4</xsl:when>
+                    <xsl:when test="$priority = 'medium'">3</xsl:when>
+                    <xsl:when test="$priority = 'low'">2</xsl:when>
+                    <xsl:when test="$priority = 'lowest'">1</xsl:when>
                     <xsl:otherwise>3</xsl:otherwise>
                 </xsl:choose>
             </xsl:variable>
@@ -64,7 +64,7 @@
                     <xsl:with-param name="link" select="$link"/>
                 </xsl:call-template>
             </wi:id>
-            <wi:priority level="{$level}">
+            <wi:priority wi:level="{$level}">
                 <xsl:value-of select="$priority"/>
             </wi:priority>
         </wi:item>

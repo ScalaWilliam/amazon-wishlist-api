@@ -89,7 +89,7 @@ if ( $feed === 'rss') {
 } else {
 
     if ( !defined('_AWL_XHTML') )
-        define('_AWL_XHTML', 'sexy/great-style.xsl');
+        define('_AWL_XHTML', 'xhtml.xsl');
     $xhtml = \Awl\transform($slim, _AWL_XHTML);
     echo $xhtml->saveXML();
 }
