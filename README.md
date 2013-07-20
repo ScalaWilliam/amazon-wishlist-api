@@ -53,6 +53,7 @@ This application can be used:
  * As a back-end API for collecting information about your Amazon Wishlist.
  * As a front-end site. It works with tablets (iPad, Android) and desktop browsers (IE10, Chrome, Opera).
  * As a plug-in for your personal site.
+ * Behind HTTPS/SSL. Images are downloaded automatically, to ensure security.
 
 ____
 

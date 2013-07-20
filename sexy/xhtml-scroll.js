@@ -63,7 +63,8 @@ function clicky(node, fun) {
 
 function setupMouse(container) {
     var body = document.querySelector("body");
-    if ( "attachEvent" in body ) return;
+    // IE 10 has some neat features :-)
+    if ( "msIndexedDB" in window ) return;
     if ( "onmousewheel" in body )
         return body.addEventListener("mousewheel", onWheel, false);
     return body.addEventListener("DOMMouseScroll", onWheel);
