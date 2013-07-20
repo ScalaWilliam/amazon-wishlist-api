@@ -357,7 +357,7 @@ class Amazon_Wishlist_Fetcher {
         $rootDocument = new \DOMDocument("1.0","UTF-8");
         $ns = static::$namespace;
         $rootDocument->loadXML('<wishlist xmlns="'.$ns.'"></wishlist>');
-        $idElement = $rootDocument->createElementNS($ns, 'id', $id);
+        $idElement = $rootDocument->createElementNS($ns, 'wl:id', $id);
         $rootDocument->documentElement->appendChild($idElement);
         foreach($pagesIndex as $url => $dom) {
 

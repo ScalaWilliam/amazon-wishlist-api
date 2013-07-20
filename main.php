@@ -10,6 +10,7 @@ $fetchFullQ = isset($_GET['full']) && $_GET['full'] === 'full';
 $fetchID = isset($_GET['id']) && is_string($_GET['id']) ? $_GET['id'] : '1FY1N9FN7CLX8';
 $renew = isset($_GET['renew']) && $_GET['renew'] === 'renew';
 $data = isset($_GET['data']) && $_GET['data'] === 'data';
+$feed = isset($_GET['feed']) ? (in_array($_GET['feed'], array('atom', 'rss'), true) ? $_GET['feed'] : null) : null;
 
 $modes = array('default', 'datafile', 'sqlite');
 
@@ -41,7 +42,13 @@ header("Content-type: text/xml; charset=utf-8");
 
 $result = $wish->FetchWishlistPages($fetchID);
 $slim = $wish->PickUpInterestingBits($result);
-if ($data) {
+if ( $feed === 'rss') {
+    $rss = \Awl\pretty($slim, 'rss.xsl');
+    echo $rss->saveXML();
+} elseif ( $feed === 'atom' ) {
+    $atom = \Awl\pretty($slim, 'atom.xsl');
+    echo $atom->saveXML();
+} elseif ($data) {
     echo $slim->saveXML();
 } elseif ( $fetchFullQ ) {
     echo $result->saveXML();

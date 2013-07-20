@@ -19,7 +19,7 @@ header {
     top:0;
     left:0;
     right:0;
-    height:15em;
+    height:10em;
 }
 #container {
     width:100%;
@@ -36,7 +36,7 @@ article {
     overflow-x:auto;
     overflow-y:hidden;
     position:absolute;
-    top:15em;
+    top:10em;
     left:0;
     right:0;
     bottom:0; -ms-scroll-chaining: none;

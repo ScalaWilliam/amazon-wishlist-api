@@ -18,7 +18,7 @@
                     <p>See the <a href="{wl:page[1]/wl:url}"><xsl:value-of select="wl:page[1]/wl:name"/> Wishlist on Amazon.co.uk</a></p>
                     <footer>
                         <p>Based on the <a href="https://vynar.com/2013/amazon-wishlist">Amazon Wishlist API.</a> Written in PHP5, DOM, XSLT 1.0, CSS3, JavaScript, SQLite.</p>
-                        <p><a href="?id={wl:id}&amp;data=data">View XML</a>, <a href="?id={wl:id}&amp;full=full">View semantic XHTML</a>, <a href="?id={wl:id}&amp;rss=rss">View RSS</a>.</p>
+                        <p><a href="?id={wl:id}&amp;data=data">View XML</a>, <a href="?id={wl:id}&amp;full=full">View semantic XHTML</a>, <a href="?id={wl:id}&amp;feed=rss">View RSS</a>, <a href="?id={wl:id}&amp;feed=atom">View Atom</a>.</p>
                     </footer>
                 </header>
                 <article id="Scroller">
