@@ -6,7 +6,7 @@ Developed By William Narmontas - https://vynar.com/
 
 **A demo is available here:**
 
-* https://vynar.com/2013/amazon-wishlist-api/
+* https://vynar.com/2013/amazon-wishlist/
 
 Getting started
 ---
@@ -23,25 +23,25 @@ Just copy this repository into a directory that you like.
 You can use this application either as an API or as the end-user application.
 We'll assume you've put everything in:
 
- * https://vynar.com/2013/amazon-wishlist-api/
+ * https://vynar.com/2013/amazon-wishlist/
 
 So that it can be accessed via:
 
- * https://vynar.com/2013/amazon-wishlist-api/api.php
+ * https://vynar.com/2013/amazon-wishlist/api.php
 
 ### World-facing: ###
 Request wishlist XML data:
 
- * https://vynar.com/2013/amazon-wishlist-api/api.php?data=data
- * Sampled: https://vynar.com/2013/amazon-wishlist-api/samples/C.slim.xml
+ * https://vynar.com/2013/amazon-wishlist/api.php?data=data
+ * Sampled: https://vynar.com/2013/amazon-wishlist/samples/C.slim.xml
 
 Request the RSS feed:
 
- * https://vynar.com/2013/amazon-wishlist-api/api.php?feed=rss
+ * https://vynar.com/2013/amazon-wishlist/api.php?feed=rss
 
 Request the Atom feed:
 
- * https://vynar.com/2013/amazon-wishlist-api/api.php?feed=atom
+ * https://vynar.com/2013/amazon-wishlist/api.php?feed=atom
 
 ### Development: ###
 
@@ -66,20 +66,20 @@ Then visit the following URLs:
 
 __Generate XML samples:__
 
- * https://vynar.com/2013/amazon-wishlist-api/api.php?samples=samples
+ * https://vynar.com/2013/amazon-wishlist/api.php?samples=samples
 
 __Force re-newal of SQLite database__:
 
- * https://vynar.com/2013/amazon-wishlist-api/api.php?renew=renew
+ * https://vynar.com/2013/amazon-wishlist/api.php?renew=renew
 
 __Request semantic XML data:__
 
- * https://vynar.com/2013/amazon-wishlist-api/api.php?full=full
- * Sampled: https://vynar.com/2013/amazon-wishlist-api/samples/A.combined.xml
+ * https://vynar.com/2013/amazon-wishlist/api.php?full=full
+ * Sampled: https://vynar.com/2013/amazon-wishlist/samples/A.combined.xml
 
 __Request raw XML data:__
 
- * Sampled: https://vynar.com/2013/amazon-wishlist-api/samples/A.combined.xml
+ * Sampled: https://vynar.com/2013/amazon-wishlist/samples/A.combined.xml
  * Also available in the SQLite database.
 
 How it works:
