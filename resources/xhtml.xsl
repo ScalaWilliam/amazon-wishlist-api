@@ -22,7 +22,7 @@
                                 <li><a href="?id={wl:id}&amp;feed=rss">RSS</a>               </li>
                                 <li><a href="?id={wl:id}&amp;full=full">Semantic XHTML</a>        </li>
                                 <li><a id="wl-link" target="_blank" href="{wl:page[1]/wl:url}"><xsl:value-of select="wl:page[1]/wl:name"/> Amazon.co.uk Wishlist</a></li>
-                                <li>Written in PHP5, SQLite, DOM, XSLT 1.0, CSS3, JavaScript, based on the <a href="https://vynar.com/2013/amazon-wishlist">Amazon Wishlist API</a></li>
+                                <li>Written in PHP5, SQLite, DOM, XSLT 1.0, CSS3, JavaScript, based on the <a href="https://vynar.com/2013/amazon-wishlist">Amazon Wishlist API</a> (<a href="https://github.com/eenccette/amazon-wishlist-api">GitHub</a>)</li>
                             </ul>
                         </nav>
                     </header>
