@@ -15,6 +15,13 @@
         </xsl:choose>
     </xsl:template>
     
+    <xsl:template name="localsrc" xmlns:php="http://php.net/xsl">
+        <xsl:param name="text"/>
+        <xsl:if test="function-available('php:function') and php:function('function_exists', '\Awl\localsrc')">
+            <xsl:copy-of select="php:function('\Awl\localsrc',$text)"/>
+        </xsl:if>
+    </xsl:template>
+    
     <xsl:template name="extract_id">
         <xsl:param name="link"/>
         <xsl:value-of select="substring-before(substring-after($link, 'dp/'), '/')"/>
@@ -80,7 +87,21 @@
     </xsl:template>
     
     <xsl:template mode="item" match="*[@class='productImage']/*/xhtml:img[1]">
-        <wi:image wi:width="{@width}" wi:height="{@height}" wi:src="{@src}"/>
+        <wi:image wi:width="{@width}" wi:height="{@height}" wi:src="{@src}">
+             <xsl:variable name="localsrc">
+                 <xsl:call-template name="localsrc">
+                     <xsl:with-param name="text">
+                         <xsl:value-of select="@src"/>
+                     </xsl:with-param>
+                 </xsl:call-template>
+             </xsl:variable>
+            <xsl:if test="$localsrc != ''">
+                <xsl:attribute name="wi:localsrc">
+                    <xsl:value-of select="$localsrc"/>
+                </xsl:attribute>
+            </xsl:if>
+        </wi:image>
+
         <xsl:copy>
             <xsl:apply-templates mode="item"/>
         </xsl:copy>
@@ -94,6 +115,7 @@
             </wi:price>
         </xsl:copy>
     </xsl:template>
+
     <xsl:template mode="item" match="xhtml:td[contains(@class, 'lineItemOwnerInfoJS')]//xhtml:nobr">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>

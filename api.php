@@ -1,44 +1,53 @@
 <?php
 error_reporting(E_ALL);
 define('_AWL_DEFAULT_ID', '1FY1N9FN7CLX8');
-define('_RESOURCES', '.\resources');
+define('_RESOURCES', 'resources');
 set_include_path(get_include_path() . PATH_SEPARATOR . _RESOURCES);
 
 if ( !class_exists('tidy', true)) die("<code>sudo apt-get install php5-tidy</code>");
 if ( !class_exists('XSLTProcessor', true)) die("<code>sudo apt-get install php5-xsl</code>");
 
 require_once "resources/awl.inc.php";
+require_once "resources/util.inc.php";
 \Awl\encoding();
+
+
 
 function protect_awl() {
     $_GET['full'] = null;
     $_GET['id'] = null;
     $_GET['renew'] = null;
     $_GET['samples'] = null;
+    $_GET['images'] = null;
 }
 
+$protect = true;
 /* comment the following line to access everything in the API */
 $protect = false;
 
-$protect = !isset($protect) ? true : $protect;
+// if running via CLI, we don't really care.
+if ( isset($_SYSTEM['argv'][0]) )
+    $protect = false;
 
-if ( $protect ) {
+if ( $protect )
     protect_awl();
-}
 
 $sqlite = 'sqlite:samples/awl.sqlite';
 
 // Ubuntu: sudo apt-get install php5-tidy
 // TODO: write some tests ;)
 // Somehow I don't think I'll manage to get there though!
-$fetchFullQ = isset($_GET['full']) && $_GET['full'] === 'full';
-$fetchID = isset($_GET['id']) && is_string($_GET['id']) ? $_GET['id'] : _AWL_DEFAULT_ID;
-$renew = isset($_GET['renew']) && $_GET['renew'] === 'renew';
-$data = isset($_GET['data']) && $_GET['data'] === 'data';
-$feed = isset($_GET['feed']) ? (in_array($_GET['feed'], array('atom', 'rss'), true) ? $_GET['feed'] : null) : null;
-$createSamples = isset($_GET['samples']) && $_GET['samples'] === 'samples';
-$modes = array('default', 'datafile', 'sqlite');
 
+
+$fetchID = isset($_GET['id']) && is_string($_GET['id']) ? $_GET['id'] : _AWL_DEFAULT_ID;
+$feed = isset($_GET['feed']) ? (in_array($_GET['feed'], array('atom', 'rss'), true) ? $_GET['feed'] : null) : null;
+
+list($fetchFullQ, $renew, $data, $createSamples, $downloadImages) = \Awl\require_switches('full', 'renew', 'data', 'samples', 'images');
+
+if ( !defined('_USE_LOCAL_IMAGES'))
+    define('_USE_LOCAL_IMAGES', $downloadImages);
+
+$modes = array('default', 'datafile', 'sqlite');
 $mode = 'sqlite';
 if ( !in_array($mode, $modes, true) )
     $mode = 'default';
@@ -67,15 +76,20 @@ header("Content-type: text/xml; charset=utf-8");
 //header("Content-type: text/plain; charset=utf-8");
 
 $combined = $wish->FetchWishlistPages($fetchID);
+if ( $createSamples ) \Awl\file_put_contents_utf8('samples/A.combined.xml', $combined->saveXML());
 $semantic = $wish->semanticise($combined);
+if ( $createSamples ) \Awl\file_put_contents_utf8('samples/B.semantic.xml', $semantic->saveXML());
 $slim = $wish->PickUpInterestingBits($semantic);
+if ( $createSamples ) \Awl\file_put_contents_utf8('samples/C.slim.xml', $slim->saveXML());
 
-if ( $createSamples )
-    \Awl\file_put_contents_utf8('samples/A.combined.xml', $combined->saveXML());
-if ( $createSamples )
-    \Awl\file_put_contents_utf8('samples/B.semantic.xml', $semantic->saveXML());
-if ( $createSamples )
-    \Awl\file_put_contents_utf8('samples/C.slim.xml', $slim->saveXML());
+
+if ( _USE_LOCAL_IMAGES )
+    \Awl\download_images($slim);
+
+$xml = $xhtml = $atom = $rss = null;
+
+
+
 if ( $feed === 'rss') {
     $rss = \Awl\transform($slim, 'rss.xsl');
     echo $rss->saveXML();

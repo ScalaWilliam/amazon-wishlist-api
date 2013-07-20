@@ -44,10 +44,10 @@ function Initialize() {
         document.body.setAttribute('class', 'poppy');
     }
     function $(q){
-        return document.body.$(q)
+        return document.querySelector(q)
     }
     function $$(q){
-        return document.body.$$(q)
+        return document.querySelectorAll(q)
     }
 }
 

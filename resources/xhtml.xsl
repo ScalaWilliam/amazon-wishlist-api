@@ -52,8 +52,15 @@
             <a href="{wl:link}">
                 <h2><xsl:value-of select="wl:title"/></h2>
                 <figure>
-                    <img src="{wl:image/@wl:src}"/>
-                    <span class="background" style="background-image:url('{wl:image/@wl:src}')"></span>
+                    <xsl:variable name="image">
+                        <xsl:choose>
+                            <xsl:when test="wl:image/@wl:localsrc"><xsl:value-of select="wl:image/@wl:localsrc"/></xsl:when>
+                            <xsl:otherwise><xsl:value-of select="wl:image/@wl:src"/></xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:variable>
+                    <xsl:copy-of select="wl:image"/>
+                    <img src="{$image}"/>
+                    <span class="background" style="background-image:url('{$image}')"></span>
                 </figure>
                 <xsl:if test="wl:price">
                     <h3><xsl:value-of select="wl:price"/></h3>
