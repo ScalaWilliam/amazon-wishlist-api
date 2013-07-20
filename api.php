@@ -4,8 +4,29 @@ error_reporting(E_ALL);
 define('_RESOURCES', '.\resources');
 set_include_path(get_include_path() . PATH_SEPARATOR . _RESOURCES);
 
-require_once "resources\awl.inc.php";
+if ( !class_exists('tidy', true)) die("<code>sudo apt-get install php5-tidy</code>");
+if ( !class_exists('XSLTProcessor', true)) die("<code>sudo apt-get install php5-xsl</code>");
+
+require_once "resources/awl.inc.php";
 \Awl\encoding();
+
+function protect_awl() {
+    $_GET['full'] = null;
+    $_GET['id'] = null;
+    $_GET['renew'] = null;
+    $_GET['samples'] = null;
+}
+
+/* comment the following line to access everything in the API */
+$protect = false;
+
+$protect = !isset($protect) ? true : $protect;
+
+if ( $protect ) {
+    protect_awl();
+}
+
+$sqlite = 'sqlite:samples/awl.sqlite';
 
 // Ubuntu: sudo apt-get install php5-tidy
 // TODO: write some tests ;)
@@ -15,7 +36,7 @@ $fetchID = isset($_GET['id']) && is_string($_GET['id']) ? $_GET['id'] : '1FY1N9F
 $renew = isset($_GET['renew']) && $_GET['renew'] === 'renew';
 $data = isset($_GET['data']) && $_GET['data'] === 'data';
 $feed = isset($_GET['feed']) ? (in_array($_GET['feed'], array('atom', 'rss'), true) ? $_GET['feed'] : null) : null;
-
+$createSamples = isset($_GET['samples']) && $_GET['samples'] === 'samples';
 $modes = array('default', 'datafile', 'sqlite');
 
 $mode = 'sqlite';
@@ -33,7 +54,7 @@ if ( $mode == 'sqlite' ) {
     // Load up the results directly (use this as a straightforward api) -> cache/save them then...
     // but for development purposes - stick to sqlite, it's neat.
     $timeout = $renew ? 0 : 300600;
-    $fetcher = new \Awl\SQLiteFetcher(new PDO('sqlite:banaga.sqlite'), 'bang', $timeout);
+    $fetcher = new \Awl\SQLiteFetcher(new PDO($sqlite), 'bang', $timeout);
 }
 if ( $mode == 'datafile' ) {
     $fetcher = new \Awl\SerialisedFetcher("cacher.dat");
@@ -43,10 +64,18 @@ if ( $mode != 'default' ) {
 }
 
 header("Content-type: text/xml; charset=utf-8");
+//header("Content-type: text/plain; charset=utf-8");
 
-$result = $wish->FetchWishlistPages($fetchID);
-$slim = $wish->PickUpInterestingBits($result);
+$combined = $wish->FetchWishlistPages($fetchID);
+$semantic = $wish->semanticise($combined);
+$slim = $wish->PickUpInterestingBits($semantic);
 
+if ( $createSamples )
+    \Awl\file_put_contents_utf8('samples/A.combined.xml', $combined->saveXML());
+if ( $createSamples )
+    \Awl\file_put_contents_utf8('samples/B.semantic.xml', $semantic->saveXML());
+if ( $createSamples )
+    \Awl\file_put_contents_utf8('samples/C.slim.xml', $slim->saveXML());
 if ( $feed === 'rss') {
     $rss = \Awl\transform($slim, 'rss.xsl');
     echo $rss->saveXML();
@@ -56,9 +85,12 @@ if ( $feed === 'rss') {
 } elseif ($data) {
     echo $slim->saveXML();
 } elseif ( $fetchFullQ ) {
-    echo $result->saveXML();
+    echo $semantic->saveXML();
 } else {
-    $xhtml = \Awl\transform($slim, 'xhtml.xsl');
+
+    if ( !defined('_AWL_XHTML') )
+        define('_AWL_XHTML', 'great-style.xsl');
+    $xhtml = \Awl\transform($slim, _AWL_XHTML);
     echo $xhtml->saveXML();
 }
 

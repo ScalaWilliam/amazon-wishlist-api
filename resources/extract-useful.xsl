@@ -5,20 +5,35 @@
     
     <xsl:template match="wi:*">
         <xsl:copy>
-            <xsl:apply-templates select="attribute::wi:*"/>
+            <xsl:apply-templates select="attribute::*"/>
             <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
-    
+    <xsl:template match="wi:page">
+        <xsl:copy>
+            <xsl:apply-templates select="attribute::*"/>
+            <!--
+            <xsl:apply-templates select=".//wi:*[not(./ancestor::wi:item)]"/>
+            <xsl:apply-templates select=".//wi:item"/>
+                <xsl:sort order="ascending" select="(.//wi:added/@wi:unix)[1]"/>
+            </xsl:apply-templates>
+            -->
+            <xsl:apply-templates/>
+        </xsl:copy>
+    </xsl:template>
     <xsl:template match="wi:wishlist">
         <xsl:copy>
-            <xsl:apply-templates select="attribute::wi:*"/>
+            <xsl:apply-templates select="attribute::*"/>
             <xsl:copy-of select="descendant::wi:page[1]/wi:url"/>
             <xsl:apply-templates/>
         </xsl:copy>
     </xsl:template>
     
     <xsl:template match="attribute::wi:*">
+        <xsl:copy-of select="."/>
+    </xsl:template>
+    
+    <xsl:template match="attribute::*[parent::wi:*]">
         <xsl:copy-of select="."/>
     </xsl:template>
     

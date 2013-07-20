@@ -12,6 +12,11 @@ require_once "fetcher.inc.php";
  * Also use Tidy to clean up any nasty HTML.
  */
 
+function extract_id($text) {
+    if ( preg_match('/dp\/([A-Z0-9]+)\//', $text, $m) ) {
+        return $m[1];
+    }
+}
 
 class Amazon_Wishlist_Fetcher {
     protected $__fetcher;
@@ -71,7 +76,7 @@ class Amazon_Wishlist_Fetcher {
         }
         return $itemsa;
     }
-    public static function semanticise(\DOMDocument $dom) {
+    public static function semanticisex(\DOMDocument $dom) {
         $xpath = new \DOMXPath($dom);
 
 
@@ -247,24 +252,27 @@ class Amazon_Wishlist_Fetcher {
             $url = 'http://www.amazon.co.uk'.$url;
         if ( isset($pagesIndex[$url]))
             $url = null;
-        return array($dom, $url);
+        $ddom = new \DOMDocument;
+        $ddom->loadXML($dom->saveXML());
+        return array($ddom, $url);
     }
     public function composePagesIndex($pagesIndex, $id) {
         $rootDocument = new \DOMDocument("1.0","UTF-8");
         $ns = static::$namespace;
-        $rootDocument->loadXML('<wishlist xmlns="'.$ns.'"></wishlist>');
+        $rootDocument->loadXML('<wi:wishlist xmlns:wi="'.$ns.'" xmlns="http://www.w3.org/1999/xhtml"></wi:wishlist>');
         $idElement = $rootDocument->createElementNS($ns, 'wl:id', $id);
         $rootDocument->documentElement->appendChild($idElement);
         foreach($pagesIndex as $url => $dom) {
-
             $page = $rootDocument->documentElement->appendChild($rootDocument->createElementNS($ns, 'wi:page'));
             $page->appendChild($rootDocument->createElementNS($ns, 'wi:url'))->appendChild($rootDocument->createTextNode($url));
             $html = $rootDocument->importNode($dom->documentElement, true);
             $page->appendChild($html);
         }
 
-        static::semanticise($rootDocument);
-
         return $rootDocument;
+    }
+    public function semanticise(\DOMDocument $index) {
+        $return = transform($index, 'semanticise.xsl');
+        return $return;
     }
 }
