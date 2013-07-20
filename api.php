@@ -1,6 +1,6 @@
 <?php
 error_reporting(E_ALL);
-
+define('_AWL_DEFAULT_ID', '1FY1N9FN7CLX8');
 define('_RESOURCES', '.\resources');
 set_include_path(get_include_path() . PATH_SEPARATOR . _RESOURCES);
 
@@ -32,7 +32,7 @@ $sqlite = 'sqlite:samples/awl.sqlite';
 // TODO: write some tests ;)
 // Somehow I don't think I'll manage to get there though!
 $fetchFullQ = isset($_GET['full']) && $_GET['full'] === 'full';
-$fetchID = isset($_GET['id']) && is_string($_GET['id']) ? $_GET['id'] : '1FY1N9FN7CLX8';
+$fetchID = isset($_GET['id']) && is_string($_GET['id']) ? $_GET['id'] : _AWL_DEFAULT_ID;
 $renew = isset($_GET['renew']) && $_GET['renew'] === 'renew';
 $data = isset($_GET['data']) && $_GET['data'] === 'data';
 $feed = isset($_GET['feed']) ? (in_array($_GET['feed'], array('atom', 'rss'), true) ? $_GET['feed'] : null) : null;

@@ -2,7 +2,7 @@ Amazon Wishlist Scraper API
 ====
 A PHP5 based Amazon Wishlist API with supporting examples and code around it.
 
-Developed By William Narmontas - https://vynar.com/
+Developed By [William Narmontas](https://vynar.com/)
 
 **A demo is available here:**
 
@@ -29,7 +29,9 @@ So that it can be accessed via:
 
  * https://vynar.com/2013/amazon-wishlist/api.php
 
-### World-facing: ###
+___
+
+### Experience it ###
 Request wishlist XML data:
 
  * https://vynar.com/2013/amazon-wishlist/api.php?data=data
@@ -44,7 +46,7 @@ Request the Atom feed:
  * https://vynar.com/2013/amazon-wishlist/api.php?feed=atom
 
 Use cases
-___
+---
 
 This application can be used:
 
@@ -52,9 +54,10 @@ This application can be used:
  * As a front-end site. It works with tablets (iPad, Android) and desktop browsers (IE10, Chrome, Opera).
  * As a plug-in for your personal site.
 
+____
 
 Development
-___
+---
 
 
 Everything that you need to know is located in 'api.php' Once you've got the API running in your hosting environment, comment the following line in 'api.php':
@@ -71,6 +74,13 @@ so that it looks like this:
 
 
 This will make sure that you can access the full features.
+
+Change the wishlist ID here:
+~~~php
+define('_AWL_DEFAULT_ID', '1FY1N9FN7CLX8');
+~~~
+
+You can get the ID by clicking on "Share with friends" on your Wishlist page.
 
 
 Then visit the following URLs:
@@ -114,6 +124,6 @@ How it works:
 
 Licensing
 ---
-(2013 William Narmontas https://vynar.com/)
-The GitHub code is licensed under the MIT license.
-Attribution is very much apprciated.
+(C) 2013 [William Narmontas](https://vynar.com/).
+
+The GitHub code is licensed under the MIT license. Attribution is very much apprciated.
