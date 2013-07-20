@@ -1,11 +1,15 @@
 <?php
 error_reporting(E_ALL);
-require_once "awl.inc.php";
-\awl\encoding();
+
+define('_RESOURCES', '.\resources');
+set_include_path(get_include_path() . PATH_SEPARATOR . _RESOURCES);
+
+require_once "resources\awl.inc.php";
+\Awl\encoding();
 
 // Ubuntu: sudo apt-get install php5-tidy
 // TODO: write some tests ;)
-//                         Somehow I don't think I'll manage to get there though!
+// Somehow I don't think I'll manage to get there though!
 $fetchFullQ = isset($_GET['full']) && $_GET['full'] === 'full';
 $fetchID = isset($_GET['id']) && is_string($_GET['id']) ? $_GET['id'] : '1FY1N9FN7CLX8';
 $renew = isset($_GET['renew']) && $_GET['renew'] === 'renew';
@@ -42,18 +46,19 @@ header("Content-type: text/xml; charset=utf-8");
 
 $result = $wish->FetchWishlistPages($fetchID);
 $slim = $wish->PickUpInterestingBits($result);
+
 if ( $feed === 'rss') {
-    $rss = \Awl\pretty($slim, 'rss.xsl');
+    $rss = \Awl\transform($slim, 'rss.xsl');
     echo $rss->saveXML();
 } elseif ( $feed === 'atom' ) {
-    $atom = \Awl\pretty($slim, 'atom.xsl');
+    $atom = \Awl\transform($slim, 'atom.xsl');
     echo $atom->saveXML();
 } elseif ($data) {
     echo $slim->saveXML();
 } elseif ( $fetchFullQ ) {
     echo $result->saveXML();
 } else {
-    $xhtml = \Awl\pretty($slim);
+    $xhtml = \Awl\transform($slim, 'xhtml.xsl');
     echo $xhtml->saveXML();
 }
 
