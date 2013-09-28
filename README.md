@@ -45,6 +45,10 @@ Request the Atom feed:
 
  * https://vynar.com/2013/amazon-wishlist/api.php?feed=atom
 
+Refresh / update the database when you've updated the Amazon ID:
+
+ * https://vynar.com/2013/amazon-wishlist/api.php?renew=renew
+
 Use cases
 ---
 
