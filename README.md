@@ -1,8 +1,13 @@
+Closed
+===
+___This project is to be replaced with a Scala version.___
+
+
+
+
 Amazon Wishlist Scraper API
 ====
 
-
-___This project is to be replaced with a Scala version.___
 
 A PHP5 based Amazon Wishlist Scraper API with supporting examples and code around it.
 
