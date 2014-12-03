@@ -56,19 +56,17 @@ object WishlistApp extends App with SimpleRoutingApp {
   import concurrent.ExecutionContext.Implicits.global
   import org.json4s.jackson.Serialization.write
   import org.json4s.JsonDSL._
-  lazy val httpHost = System.getProperty("http.host", "localhost")
-  lazy val httpPort = System.getProperty("http.port", "7119").toInt
+  val httpHost = System.getProperty("http.host", "localhost")
 
-  println(s"""Open the page at: http://$httpHost:$httpPort""")
+  // "" -> /get, /hello/john -> /hello/john/get
+  val contextPath = System.getProperty("http.context", "")
+  val httpPort = System.getProperty("http.port", "7119").toInt
+
+  println(s"""Open the page at: http://$httpHost:$httpPort$contextPath""")
 
   startServer(interface = httpHost, port = httpPort) {
-    path("hello") {
-      get {
-        complete {
-          <h1>Say hello to spray</h1>
-        }
-      }
-    } ~ path("get") {
+    rawPathPrefix(if (contextPath equals "") "" else separateOnSlashes(contextPath)) {
+      path("get") {
       get {
         respondWithMediaType(`application/json`) {
           complete {
@@ -96,12 +94,11 @@ object WishlistApp extends App with SimpleRoutingApp {
       }
     } ~
     path("") {
-      encodeResponse(Gzip) {
-        getFromFile(scala.util.Properties.userDir + java.io.File.separator + "ui/index.html")
-      }
+      getFromFile(scala.util.Properties.userDir + java.io.File.separator + "ui/index.html")
     } ~
-      encodeResponse(Gzip) {
-        getFromDirectory(scala.util.Properties.userDir + java.io.File.separator + "ui")
-      }
+    getFromDirectory(scala.util.Properties.userDir + java.io.File.separator + "ui")
+  } ~ unmatchedPath { p =>
+      complete(s"totally unmatches $p")
+    }
   }
 }
