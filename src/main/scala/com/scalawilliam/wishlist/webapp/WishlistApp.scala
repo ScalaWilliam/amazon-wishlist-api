@@ -16,7 +16,6 @@ import akka.actor.ActorDSL._
 import akka.pattern.pipe
 import akka.pattern.ask
 
-
 object WishlistApp extends App with SimpleRoutingApp {
   /**
    * http://spray.io/documentation/1.2.1/spray-routing/predefined-directives-alphabetically/
@@ -57,7 +56,12 @@ object WishlistApp extends App with SimpleRoutingApp {
   import concurrent.ExecutionContext.Implicits.global
   import org.json4s.jackson.Serialization.write
   import org.json4s.JsonDSL._
-  startServer(interface = "localhost", port = 7119) {
+  lazy val httpHost = System.getProperty("http.host", "localhost")
+  lazy val httpPort = System.getProperty("http.port", "7119").toInt
+
+  println(s"""Open the page at: http://$httpHost:$httpPort""")
+
+  startServer(interface = httpHost, port = httpPort) {
     path("hello") {
       get {
         complete {
@@ -90,10 +94,14 @@ object WishlistApp extends App with SimpleRoutingApp {
           }
         }
       }
-    } ~ pathPrefix("files") {
+    } ~
+    path("") {
       encodeResponse(Gzip) {
-        getFromBrowseableDirectory(scala.util.Properties.userDir)
+        getFromFile(scala.util.Properties.userDir + java.io.File.separator + "ui/index.html")
       }
-    }
+    } ~
+      encodeResponse(Gzip) {
+        getFromDirectory(scala.util.Properties.userDir + java.io.File.separator + "ui")
+      }
   }
 }

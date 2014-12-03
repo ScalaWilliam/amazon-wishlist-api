@@ -26,6 +26,7 @@ case class CleanWishlistItem(
   addToCartLink: Option[String],
   priority: String,
   price: Option[String],
+  comment: Option[String],
   reviewsLink: Option[String],
   wants: Int,
   has: Int
@@ -68,6 +69,7 @@ object CleanWishlist {
             image = item.image,
             reserveLink = new URIBuilder(startUri).setPath(item.reserveLinkRelative).build().toString,
             priority = item.priority,
+          comment = item.comment,
             price = item.price,
             addToCartLink = item.addToCartRelative.map(rel => new URIBuilder(startUri).setPath(rel).build().toString),
             reviewsLink = item.reviewsLink,
