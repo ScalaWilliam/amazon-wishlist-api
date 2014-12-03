@@ -1,7 +1,7 @@
 angular.module('yay', [])
     .controller('Sygments', function($scope, $http) {
 
-    $http.get("/get").success(function (res) {
+    $http.get("get").success(function (res) {
         $scope.wishlist = res;
         res.items.filter(function(x) { return x.title.indexOf("HTC") != -1; }).forEach(function(x) {
             $scope.selected = x;

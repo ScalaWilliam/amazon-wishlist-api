@@ -98,7 +98,7 @@ object WishlistApp extends App with SimpleRoutingApp {
     } ~
     getFromDirectory(scala.util.Properties.userDir + java.io.File.separator + "ui")
   } ~ unmatchedPath { p =>
-      complete(s"totally unmatches $p")
+       complete(s"totally unmatches $p")
     }
   }
 }
