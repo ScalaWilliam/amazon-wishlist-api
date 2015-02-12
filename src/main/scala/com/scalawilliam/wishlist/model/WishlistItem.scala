@@ -7,7 +7,7 @@ case class WishlistItem
   id: String,
   title: String,
   // /dp/B004BDOUAI/ref=wl_it_dp_o_pC_nS_ttl?_encoding=UTF8&colid=1FY1N9FN7CLX8&coliid=ILQRGIIW6BUKA
-  itemRelativeLink: String,
+  itemRelativeLink: Option[String],
   // Wed Jul 02 00:00:00 BST 2014
   addedOn: String,
   image: Image,
@@ -26,7 +26,7 @@ object WishlistItem {
   def stub = WishlistItem(
     id = "B004BDOUAM",
     title = "test item",
-    itemRelativeLink = "/dp/B004BDOUAI/ref=wl_it_dp_o_pC_nS_ttl?_encoding=UTF8&colid=1FY1N9FN7CLX8&coliid=ILQRGIIW6BUKA",
+    itemRelativeLink = Option("/dp/B004BDOUAI/ref=wl_it_dp_o_pC_nS_ttl?_encoding=UTF8&colid=1FY1N9FN7CLX8&coliid=ILQRGIIW6BUKA"),
     addedOn = "Wed Jul 02 00:00:00 BST 2014",
     image = Image.stub,
     reserveLinkRelative ="/gp/registry/side/reserve?ie=UTF8&id=<ID>&itemId=<ITEM-ID>&type=wishlist",

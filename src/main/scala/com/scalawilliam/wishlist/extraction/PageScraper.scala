@@ -21,20 +21,13 @@ object PageScraper {
   val itemAdded = """Added (.*)""".r
 
   def extractItem(container: Element, localId: String): WishlistItem Or Every[ErrorMessage] = {
-
-    val extractedIdOR = container.select(s"a#itemName_$localId[title][href]").optionalAttr("href") match {
-      case Some(globalIdMatch(extractedId)) => Good(extractedId)
-      case other => Bad(One(s"Could not find a valid global id. Found: $other"))
-    }
-    val itemNameLink = container.select(s"a#itemName_$localId[title][href]")
-    val itemTitleOR = itemNameLink.optionalAttr("title") match {
+    val itemTitleOR = container.select(s"a#itemName_$localId[title][href]").optionalAttr("title") orElse {
+      container.select(s"span#itemName_$localId").optionalText.map(_.trim)
+    } match {
       case Some(title) => Good(title)
-      case other => Bad(One("Could not find a title"))
+      case None => Bad(One(s"Could not find title for $localId"))
     }
-    val itemRelativeLinkOR = itemNameLink.optionalAttr("href") match {
-      case Some(link) => Good(link)
-      case other => Bad(One("Could not find a relative link"))
-    }
+    val itemRelativeLinkO = container.select(s"a#itemName_$localId[title][href]").optionalAttr("href")
     val addedOnOR = container.select(s"#itemAction_$localId span.a-size-small").optionalText.map(_.trim) match {
       case Some(itemAdded(when)) => Good(dateFormat.parse(when))
       case other => Bad(One(s"Could not find a valid 'added on' date. Found: $other"))
@@ -77,12 +70,12 @@ object PageScraper {
       case a if a.attr("href") contains "product-reviews" => a.attr("href")
     }
     val addToCartRelativeO = container.select(s"a#itemAddToCart_$localId[href]").optionalAttr("href")
-    withGood(extractedIdOR, itemTitleOR, itemRelativeLinkOR, addedOnOR, reserveLinkRelativeOR, imageOR, priceOOR, wantsOR, hasOR, priorityOR) {
-      (extractedId, itemTitle, itemRelativeLink, addedOn, reserveLinkRelative, image, priceO, wants, has, priority) =>
+    withGood(itemTitleOR, addedOnOR, reserveLinkRelativeOR, imageOR, priceOOR, wantsOR, hasOR, priorityOR) {
+      (itemTitle, addedOn, reserveLinkRelative, image, priceO, wants, has, priority) =>
         WishlistItem(
-          id = extractedId,
+          id = localId,
           title = itemTitle,
-          itemRelativeLink = itemRelativeLink,
+          itemRelativeLink = itemRelativeLinkO,
           addedOn = addedOn.toString,
           image = image,
           price = priceO,

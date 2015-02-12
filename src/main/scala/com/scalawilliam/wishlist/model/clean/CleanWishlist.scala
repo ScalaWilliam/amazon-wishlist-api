@@ -20,7 +20,7 @@ items: List[CleanWishlistItem]
 case class CleanWishlistItem(
   id: String,
   title: String,
-  link: String,
+  link: Option[String],
   image: Image,
   reserveLink: String,
   addToCartLink: Option[String],
@@ -65,7 +65,7 @@ object CleanWishlist {
         } yield CleanWishlistItem(
             id = item.id,
             title = item.title,
-            link = new URIBuilder(startUri).setPath(item.itemRelativeLink).build().toString,
+            link = item.itemRelativeLink.map(lnk => new URIBuilder(startUri).setPath(lnk).build().toString),
             image = item.image,
             reserveLink = new URIBuilder(startUri).setPath(item.reserveLinkRelative).build().toString,
             priority = item.priority,
