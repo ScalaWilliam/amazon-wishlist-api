@@ -3,7 +3,14 @@ Scala version for Amazon Wishlist API.
 Demo:
 http://demo.scalawilliam.com/amazon-wishlist-api/
 
-Previously PHP, now SBT+Scala+Spray+AngularJS+JSoup. Cool stuff, I like it myself.
+Stuff:
+* sbt 0.13.8
+* sbt-native-packager 1.0.0
+* Scala 2.11.6
+* akka-http-experimental 1.0-M5
+* spray-client 1.3.3
+* AngularJS
+* JSoup
 
 Run this application:
 
