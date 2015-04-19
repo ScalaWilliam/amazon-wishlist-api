@@ -23,16 +23,18 @@ libraryDependencies ++= {
     "org.scalatest"       %% "scalatest" % "2.2.4" % Test,
     "org.scalactic"       %% "scalactic" % "2.2.4",
     "io.spray"            %%  "spray-can"     % sprayV,
-    "io.spray"            %%  "spray-client"     % sprayV,
+    "io.spray"            %%  "spray-client"  % sprayV,
     "io.spray"            %%  "spray-routing" % sprayV,
     "io.spray"            %%  "spray-testkit" % sprayV  % "test",
     "com.typesafe.akka"   %%  "akka-actor"    % akkaV,
+    "com.typesafe.akka"   %%  "akka-agent"    % akkaV,
+    "com.typesafe.akka"   %%  "akka-testkit"  % akkaV   % "test",
     "com.github.scala-incubator.io" % "scala-io-core_2.11" % "0.4.3-1",
     "com.github.scala-incubator.io" % "scala-io-file_2.11" % "0.4.3-1",
-    "com.typesafe.akka"   %%  "akka-testkit"  % akkaV   % "test",
     "org.json4s" %% "json4s-jackson" % "3.2.11"
   )
 }
+
 
 mainClass := Option("com.scalawilliam.wishlist.webapp.WishlistApp")
 
