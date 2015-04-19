@@ -16,6 +16,8 @@ import akka.actor.ActorDSL._
 import akka.pattern.pipe
 import akka.pattern.ask
 
+import scala.util.Try
+
 object WishlistApp extends App with SimpleRoutingApp {
   /**
    * http://spray.io/documentation/1.2.1/spray-routing/predefined-directives-alphabetically/
@@ -64,8 +66,15 @@ object WishlistApp extends App with SimpleRoutingApp {
 
   println(s"""Open the page at: http://$httpHost:$httpPort$contextPath""")
 
+  def manifestGitSha = {
+    Try {
+      Option(new java.util.jar.Manifest(getClass.getClassLoader.getResourceAsStream("META-INF/MANIFEST.MF")).getMainAttributes.getValue("Git-Head-Rev"))
+    }.toOption.flatten.getOrElse("")
+  }
+
   startServer(interface = httpHost, port = httpPort) {
     rawPathPrefix(if (contextPath equals "") "" else separateOnSlashes(contextPath)) {
+      path("version" / PathEnd) { get { complete { manifestGitSha } } } ~
       path("get") {
       get {
         respondWithMediaType(`application/json`) {

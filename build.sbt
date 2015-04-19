@@ -5,7 +5,7 @@ name := "amazon-wishlist-api"
 
 organization := "com.scalawilliam"
 
-scalaVersion := "2.11.5"
+scalaVersion := "2.11.6"
 
 version := "1.0"
 
@@ -13,13 +13,13 @@ packageArchetype.java_application
 
 libraryDependencies ++= {
   val akkaV = "2.3.9"
-  val sprayV = "1.3.2"
+  val sprayV = "1.3.3"
   Seq (
-    "org.jsoup"           % "jsoup" % "1.8.1",
-    "org.apache.httpcomponents" % "httpclient" % "4.4",
+    "org.jsoup"           % "jsoup" % "1.8.2",
+    "org.apache.httpcomponents" % "httpclient" % "4.4.1",
     "joda-time"           % "joda-time" % "2.7",
     "org.joda"            % "joda-convert" % "1.7",
-    "com.h2database"      % "h2" % "1.4.185",
+    "com.h2database"      % "h2" % "1.4.187",
     "org.scalatest"       %% "scalatest" % "2.2.4" % Test,
     "org.scalactic"       %% "scalactic" % "2.2.4",
     "io.spray"            %%  "spray-can"     % sprayV,
@@ -45,3 +45,5 @@ publishArtifact in (Compile, packageBin) := false
 publishArtifact in (Universal, packageZipTarball) := true
 
 publishArtifact in (Compile, packageDoc) := false
+
+Seq(com.atlassian.labs.gitstamp.GitStampPlugin.gitStampSettings: _*)
