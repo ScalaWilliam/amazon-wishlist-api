@@ -5,6 +5,7 @@ dependency-reduced-pom.xml
 tmp
 cache
 *.log
+logs
 example
 # use glob syntax.
 syntax: glob
