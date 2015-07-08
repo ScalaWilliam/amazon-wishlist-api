@@ -33,7 +33,7 @@ case class CleanWishlistItem(
 )
 object CleanWishlist {
   type CleanOr = CleanWishlist Or Every[ErrorMessage]
-  def apply(fetchedObjects: List[FetchedObject]): CleanWishlist Or Every[ErrorMessage] = {
+  def fromFetchedObjects(fetchedObjects: List[FetchedObject]): CleanWishlist Or Every[ErrorMessage] = {
     if ( fetchedObjects.isEmpty ) {
       Bad(One("No fetched objects found"))
     } else {

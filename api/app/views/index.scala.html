@@ -1,0 +1,49 @@
+<!doctype html>
+  <html ng-app="yay">
+    <head>
+      <title>Amazon Wishlist API for Scala demo</title>
+      <script src="@routes.Assets.at("javascripts/angular.min.js")" type="text/javascript"></script>
+      <script src="@routes.Assets.at("javascripts/app.js")" type="text/javascript"></script>
+      <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")"/>
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,400,700,300' rel='stylesheet' type='text/css'>
+      </head>
+      <body ng-controller="Sygments">
+
+        <header id="fixed-header">
+          <h1><a href="{{wishlist.uri}}" target="_blank">{{wishlist.title}} for {{wishlist.person}}</a></h1>
+          <aside id="item-detail" ng-show="hovered || selected">
+            <h2><a href="{{(hovered || selected).link}}" target="_blank">{{(hovered || selected).title}}</a></h2>
+            <div id="item-detail-flex">
+              <div id="item-detail-left">
+                <a href="{{(hovered || selected).link}}" target="_blank">
+                  <img src="{{(hovered || selected).image.src}}"
+                       width="{{(hovered || selected).image.width}}"
+                       height="{{(hovered || selected).image.height}}"/>
+                </a>
+                <p id="item-detail-price">{{(hovered || selected).price}}</p>
+              </div>
+              <div id="item-detail-rest">
+                <ul id="item-detail-actions">
+                  <li id="item-detail-action-view-item"><a href="{{(hovered || selected).link}}" target="_blank">View</a></li>
+                  <li id="item-detail-action-buy-item"><a href="{{(hovered || selected).addToCartLink}}" target="_blank">Add to basket</a></li>
+                  <li id="item-detail-action-see-reviews"><a href="{{(hovered || selected).reviewsLink}}" target="_blank">See reviews</a></li>
+                </ul>
+                <p id="item-detail-attributes">
+                  Priority: {{(hovered || selected).priority}}. I have: {{(hovered || selected).has}} and I want: {{(hovered || selected).wants}}
+                </p>
+                <blockquote ng-show="(hovered || selected).comment">{{(hovered || selected).comment}}</blockquote>
+              </div>
+            </div>
+          </aside>
+        </header>
+        <ul id="main-list">
+          <li ng-repeat="item in wishlist.items" ng-click="select(item);" ng-mouseover="hover(item)" ng-mouseout="unhover(item)"
+
+              ng-class="{selected: selected.id == item.id}"
+          >
+            <img src="{{item.image.src}}" width="{{item.image.width}}" height="{{item.image.height}}"/>
+          </li>
+        </ul>
+        <p><a href="https://www.scalawilliam.com/1412/amazon-wishlist-api">Amazon Wishlist API by &quot;Scala William&quot;</a></p>
+      </body>
+    </html>
