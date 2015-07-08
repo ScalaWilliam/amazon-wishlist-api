@@ -7,3 +7,5 @@ publishArtifact in (Universal, packageZipTarball) := true
 publishArtifact in (Compile, packageDoc) := false
 
 Seq(com.atlassian.labs.gitstamp.GitStampPlugin.gitStampSettings: _*)
+
+name := "amazon-wishlist-api"
