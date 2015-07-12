@@ -8,7 +8,7 @@ Stuff:
 * sbt 0.13.9-M1
 * Scala 2.11.7
 * spray-client 1.3.3
-* AngularJS
+* React
 * JSoup
 
 ![Example JSON response](json.png)
