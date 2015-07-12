@@ -1,12 +1,13 @@
 package com.scalawilliam.wishlist.extract
 
 import java.io.File
-import java.net.URI
-import org.h2.mvstore.MVStore
+import com.scalawilliam.wishlist.manager.DataStoreOptions
 
 object SharedDatabase {
 
-  lazy val mvStore = MVStore.open(s"target${File.separator}test.db")
-  lazy val cacheMap = mvStore.openMap[URI, String]("response-bodies")
+  def sharedOptions = DataStoreOptions(
+    databaseName = s"target${File.separator}test.db",
+    mapName = "response-bodies"
+  )
 
 }

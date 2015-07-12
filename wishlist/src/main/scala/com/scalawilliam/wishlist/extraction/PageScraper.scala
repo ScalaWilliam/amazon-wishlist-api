@@ -7,7 +7,7 @@ import scala.util.Try
 // One very lovely thing about using Scalactic validation is that
 // You will find out if there has been more than one problem that
 // Caused a failure. Will require fewer iterations to fix problems
-import com.scalawilliam.util.JSoupUtil._
+import com.scalawilliam.util.RichSoup._
 import org.scalactic._
 import org.scalactic.Accumulation._
 
