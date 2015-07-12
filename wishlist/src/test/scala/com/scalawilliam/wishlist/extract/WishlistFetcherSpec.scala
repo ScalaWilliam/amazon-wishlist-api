@@ -1,28 +1,42 @@
 package com.scalawilliam.wishlist.extract
 
+import java.io.File
+
 import akka.actor.ActorSystem
-import com.scalawilliam.util.MVStoreHttpCache
+import com.scalawilliam.util.MVStoreAsyncHttpCache
 import com.scalawilliam.wishlist.extraction.WishlistFetcher
+import com.scalawilliam.wishlist.manager.{DataStoreOptions, WishlistId}
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 
-class WishlistFetcherSpec extends WordSpec with Matchers with ScalaFutures {
+class WishlistFetcherSpec extends WordSpec with Matchers with ScalaFutures with BeforeAndAfterAll {
+
   implicit lazy val system = ActorSystem()
-  lazy val uriFetcher = MVStoreHttpCache(SharedDatabase.mvStore, SharedDatabase.cacheMap)
+
+  lazy val uriFetcher = MVStoreAsyncHttpCache(DataStoreOptions(
+    databaseName = s"target${File.separator}wf.db",
+    mapName = "response-bodies"
+  ).open())
+
+  override protected def afterAll(): Unit = {
+    uriFetcher.openDataStore.close()
+    system.shutdown()
+    super.afterAll()
+  }
+
   "Wishlist fetcher" must {
     import scala.concurrent.ExecutionContext.Implicits.global
-    val resultsF = WishlistFetcher.fetchAmazonUKWishlistPages(fetchURI = uriFetcher)(identity)("1FY1N9FN7CLX8")
+    val resultsF = WishlistFetcher(
+      wishlistId = WishlistId.myWishlistId,
+      uriFetcher.receive
+    ).fetchOptions.fetch
+
     "Not fail" in {
-//      resultsF.futureValue._2 should have size 3
-    }
-    "Give us a nice wishlist" in {
-//      val good = WishlistFetcher.convertPagesToSimpleWishlist(resultsF.futureValue)
-//      println(good.get._1)
-//      good.get._2.size shouldBe <(100)
-//      good.get._2.size shouldBe >(10)
-//      good.get._2 foreach println
+      resultsF.futureValue should have size 2
     }
   }
+
   override implicit def patienceConfig = PatienceConfig(timeout = scaled(Span(10, Seconds)), interval = scaled(Span(1, Second)))
+
 }

@@ -4,18 +4,21 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import scala.collection.JavaConverters._
 
-object JSoupUtil {
+trait RichSoup {
+  
   implicit class simplifyElements(a: Elements) {
     def optionalText =
-      a.asScala.map(_.text()).map(_.trim).filterNot(_.isEmpty).headOption
+      a.asScala.flatMap(_.optionalText).headOption
     def optionalAttr(name: String) =
-      a.asScala.map(_.attr(name)).map(_.trim).filterNot(_.isEmpty).headOption
+      a.asScala.flatMap(_.optionalAttr(name)).headOption
   }
+  
   implicit class simplifyElement(a: Element) {
     def optionalText =
-      Option(a.text()).map(_.trim).filterNot(_.isEmpty).headOption
+      Option(a.text()).map(_.trim).filter(_.nonEmpty)
     def optionalAttr(name: String) =
-      Option(a.attr(name)).map(_.trim).filterNot(_.isEmpty).headOption
+      Option(a.attr(name)).map(_.trim).filter(_.nonEmpty)
   }
 
 }
+object RichSoup extends RichSoup

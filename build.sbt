@@ -7,4 +7,4 @@ lazy val amazonWishlist = project in file("wishlist")
 
 lazy val api = project.enablePlugins(PlayScala).dependsOn(amazonWishlist)
 
-name := "amazon-wishlist-api"
+name := "amazon-wishlist-api-root"

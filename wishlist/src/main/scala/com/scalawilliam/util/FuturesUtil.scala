@@ -2,10 +2,12 @@ package com.scalawilliam.util
 
 import akka.actor.Scheduler
 
-object Util {
-  import scala.concurrent._
-  import scala.concurrent.duration._
-  import scala.util._
+import scala.concurrent._
+import scala.concurrent.duration._
+import scala.language.reflectiveCalls
+import scala.util._
+
+object FuturesUtil {
 
   def tryUpTo[T](times: Int)(f: Int => Try[T]): (Try[T], Int) = {
     Iterator.iterate(f(1) -> 1){
@@ -13,14 +15,6 @@ object Util {
 
         trial.transform(a => Try(a), _ => f(no + 1)) -> (no + 1)
     }.take(times).toVector.last
-  }
-
-  def tryUpToWithDelay[T](times: Int, delay: FiniteDuration)(f: => Try[T]): (Try[T], Int) = {
-
-    tryUpTo(times){ trialNo =>
-      if ( trialNo > 1 ) { Thread.sleep(delay.toMillis) }
-      f
-    }
   }
 
   /** Fulfil the future with value of 'result' after 'delay' **/

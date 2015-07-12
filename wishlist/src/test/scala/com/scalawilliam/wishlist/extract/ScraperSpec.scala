@@ -2,15 +2,19 @@ package com.scalawilliam.wishlist.extract
 
 import java.io.File
 import java.net.URI
-import com.scalawilliam.util.MVStoreHttpCache
-import com.scalawilliam.wishlist.extraction.{WishlistFetcher, PageScraper}
+
+import akka.actor.ActorSystem
+import com.scalawilliam.util.MVStoreAsyncHttpCache
+import com.scalawilliam.wishlist.extraction.PageScraper
+import com.scalawilliam.wishlist.manager.DataStoreOptions
 import com.scalawilliam.wishlist.model.Image
-import org.h2.mvstore.MVStore
 import org.jsoup.Jsoup
 import org.scalatest.OptionValues._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Second, Seconds, Span}
 import org.scalatest.{Inside, Inspectors, Matchers, WordSpec}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ScraperSpec extends WordSpec with Matchers with Inspectors with Inside with ScalaFutures {
 
@@ -25,8 +29,21 @@ class ScraperSpec extends WordSpec with Matchers with Inspectors with Inside wit
   "Scraper" must {
 
     // download this file automatically by running ```sbt test```
-    val documentBody = MVStoreHttpCache.apply(SharedDatabase.mvStore, SharedDatabase.cacheMap)
-    val document = Jsoup.parse(documentBody(new URI("http://www.amazon.co.uk/gp/registry/wishlist/1PZHU4HY3MXLI")).futureValue)
+    val documentBody = MVStoreAsyncHttpCache(
+      DataStoreOptions(
+        databaseName = s"target${File.separator}scraper.db",
+        mapName = "response-bodies"
+      ).open()
+    )
+
+    implicit val as = ActorSystem()
+    val startUri = new URI("http://www.amazon.co.uk/gp/registry/wishlist/1PZHU4HY3MXLI")
+    val document =
+      try Jsoup.parse(documentBody.receive(startUri).futureValue)
+      finally {
+        documentBody.openDataStore.close()
+        as.shutdown()
+      }
 
     val wishlistItems = PageScraper.getItems(document)
     val attributes = PageScraper.getAttributes(document)
