@@ -32,6 +32,7 @@ var HeaderItemDetail = React.createClass({
         </aside>;
     }
 });
+
 var Header = React.createClass({
     render() {
         var {wishlist, currentItem} = this.props;
@@ -41,6 +42,7 @@ var Header = React.createClass({
         </header>
     }
 });
+
 var GridItem = React.createClass({
     event(name) {
         var props = this.props;
@@ -54,37 +56,37 @@ var GridItem = React.createClass({
             onMouseOver={this.event('onhover')}
             onMouseOut={this.event('onunhover')}
             onClick={this.event('onselect')}
-            className={{selected: selected}}
+            className={selected && 'selected'}
             >
             {image && <img src={image.src} width={image.width} height={image.height}/>}
         </li>
     }
 });
+
 var Grid = React.createClass({
     event(name) {
-        var props = this.props;
-        return function (id) {
-            return props[name] && props[name](id);
+        return (id) => {
+            return this.props[name] && this.props[name](id);
         }
     },
     render() {
         var {items} = this.props.wishlist;
         var {selected} = this.props;
-        var props = this.props;
         return <ul id="main-list">
-            {items.map((item) => {
-                return <GridItem
-                    selected={item.id == selected}
-                    key={item.id} {... item}
-                    onunhover={this.event('onunhover')}
-                    onhover={this.event('onhover')}
-                    onselect={this.event('onselect')}
-                    />;
-            })}
+            {items.map((item) =>
+                    <GridItem
+                        selected={item.id == selected}
+                        key={item.id} {... item}
+                        onunhover={this.event('onunhover')}
+                        onhover={this.event('onhover')}
+                        onselect={this.event('onselect')}
+                        />
+            )}
         </ul>;
     }
 });
-var MMain = React.createClass({
+
+var MainPage = React.createClass({
     getInitialState() {
         return {
             hovered: null,
@@ -94,17 +96,30 @@ var MMain = React.createClass({
     },
     componentWillMount() {
         $.get('get').then((resp) => {
-            this.setState({wishlist: resp});
+            var selected = resp.items
+                .filter((item) => item.title.indexOf("Cartridges") > -1)
+                .map((item) => item.id)
+                .shift();
+            this.setState({
+                wishlist: resp,
+                selected: selected
+            });
         });
     },
     onSelect(id) {
-        this.setState({selected: id});
+        this.setState({
+            selected: id
+        });
     },
     onHover(id) {
-        this.setState({hovered: id});
+        this.setState({
+            hovered: id
+        });
     },
     onUnhover() {
-        return this.setState({hovered: null});
+        return this.setState({
+            hovered: null
+        });
     },
     currentItem() {
         var itemId = this.state.hovered || this.state.selected;
@@ -129,6 +144,6 @@ var MMain = React.createClass({
 });
 
 React.render(
-    <MMain/>,
-    document.querySelector('#main-stuff')
+    <MainPage/>,
+    document.querySelector('#main-page')
 );
