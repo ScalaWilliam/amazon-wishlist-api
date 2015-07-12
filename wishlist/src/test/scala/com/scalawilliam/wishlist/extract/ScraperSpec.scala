@@ -1,10 +1,12 @@
 package com.scalawilliam.wishlist.extract
 
+import java.io.File
 import java.net.URI
 
 import akka.actor.ActorSystem
 import com.scalawilliam.util.MVStoreAsyncHttpCache
 import com.scalawilliam.wishlist.extraction.PageScraper
+import com.scalawilliam.wishlist.manager.DataStoreOptions
 import com.scalawilliam.wishlist.model.Image
 import org.jsoup.Jsoup
 import org.scalatest.OptionValues._
@@ -27,14 +29,19 @@ class ScraperSpec extends WordSpec with Matchers with Inspectors with Inside wit
   "Scraper" must {
 
     // download this file automatically by running ```sbt test```
-    val db = SharedDatabase.sharedOptions.open()
-    val documentBody = MVStoreAsyncHttpCache(db)
+    val documentBody = MVStoreAsyncHttpCache(
+      DataStoreOptions(
+        databaseName = s"target${File.separator}scraper.db",
+        mapName = "response-bodies"
+      ).open()
+    )
+
     implicit val as = ActorSystem()
     val startUri = new URI("http://www.amazon.co.uk/gp/registry/wishlist/1PZHU4HY3MXLI")
     val document =
       try Jsoup.parse(documentBody.receive(startUri).futureValue)
       finally {
-        db.close()
+        documentBody.openDataStore.close()
         as.shutdown()
       }
 

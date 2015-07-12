@@ -9,11 +9,9 @@ libraryDependencies ++= {
     "org.scalatest"       %% "scalatest" % "2.2.5" % Test,
     "org.scalactic"       %% "scalactic" % "2.2.5",
     "io.spray"            %%  "spray-client"  % "1.3.3",
-    "com.typesafe.akka"   %%  "akka-actor"    % "2.3.11",
-    "com.typesafe.akka"   %%  "akka-agent"    % "2.3.11",
-    "com.typesafe.akka"   %%  "akka-testkit"  % "2.3.11"   % "test",
-    "com.github.scala-incubator.io" % "scala-io-core_2.11" % "0.4.3",
-    "com.github.scala-incubator.io" % "scala-io-file_2.11" % "0.4.3",
+    "com.typesafe.akka"   %%  "akka-actor"    % "2.3.12",
+    "com.typesafe.akka"   %%  "akka-agent"    % "2.3.12",
+    "com.typesafe.akka"   %%  "akka-testkit"  % "2.3.12"   % "test",
     "org.json4s" %% "json4s-jackson" % "3.2.11"
   )
 }
