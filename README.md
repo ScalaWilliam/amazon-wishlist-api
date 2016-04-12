@@ -1,4 +1,5 @@
-Scala version for Amazon Wishlist API.
+Amazon Wishlist API / Scraper
+=
 
 [![Build Status](https://travis-ci.org/ScalaWilliam/amazon-wishlist-api.svg?branch=master)](https://travis-ci.org/ScalaWilliam/amazon-wishlist-api)
 
