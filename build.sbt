@@ -29,6 +29,7 @@ lazy val api = project
   .enablePlugins(BuildInfoPlugin)
   .dependsOn(amazonWishlist)
   .settings(
+    version := "2.0",
     git.useGitDescribe := true,
     buildInfoKeys := Seq[BuildInfoKey](
       name,
