@@ -20,16 +20,6 @@ package object controllers {
   type Inject = javax.inject.Inject
   type Singleton = javax.inject.Singleton
 
-  implicit val executionContext = scala.concurrent.ExecutionContext.Implicits.global
-
   val Async = scala.async.Async
-
-  @deprecated("replace with sbt-git lookup", "")
-  private[controllers] def appVersion = {
-    Try {
-      Option(new java.util.jar.Manifest(getClass.getClassLoader.getResourceAsStream("META-INF/MANIFEST.MF")).getMainAttributes.getValue("Git-Head-Rev"))
-    }.toOption.flatten.getOrElse("")
-  }
-
 
 }

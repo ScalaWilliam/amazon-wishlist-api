@@ -17,21 +17,6 @@ case class CleanWishlist
   items: List[CleanWishlistItem]
   )
 
-case class CleanWishlistItem
-(
-  id: String,
-  title: String,
-  link: Option[String],
-  image: Image,
-  reserveLink: String,
-  addToCartLink: Option[String],
-  priority: String,
-  price: Option[String],
-  comment: Option[String],
-  reviewsLink: Option[String],
-  wants: Int,
-  has: Int
-  )
 
 object CleanWishlist {
   type CleanOr = CleanWishlist Or Every[ErrorMessage]
