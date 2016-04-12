@@ -14,7 +14,7 @@ class Main @Inject()(wishlistManager: PlayWishlistManager)
   }
 
   def version = Action {
-    Ok(appVersion)
+    Ok(buildinfo.BuildInfo.gitHeadCommit.getOrElse(""))
   }
 
   def get = Action.async {
