@@ -4,8 +4,6 @@ import java.net.URI
 
 import org.jsoup.nodes.Document
 
-import scala.concurrent.Future
-
 case class WishlistFetcherPath(wishlistId: String) {
 
   def rootPath = new URI("http://www.amazon.co.uk")

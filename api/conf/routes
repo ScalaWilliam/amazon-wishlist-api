@@ -1,5 +1,4 @@
 GET         /                    @controllers.Main.index
 GET         /get                 @controllers.Main.get
 GET         /version/            @controllers.Main.version
-POST        /update              @controllers.Main.update
 GET         /assets/*file        controllers.Assets.at(path="/public", file)

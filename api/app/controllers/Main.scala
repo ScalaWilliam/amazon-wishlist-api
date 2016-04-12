@@ -19,13 +19,7 @@ class Main @Inject()(wishlistManager: PlayWishlistManager)
 
   def get = Action.async {
     Async.async {
-      Ok(Async.await(wishlistManager.wishlistManager.fetchWishlist).get)
-    }
-  }
-
-  def update = Action.async {
-    Async.async {
-      Ok(Async.await(wishlistManager.wishlistManager.fetchCleanWishlist).get)
+      Ok(Async.await(wishlistManager.wishlist))
     }
   }
 

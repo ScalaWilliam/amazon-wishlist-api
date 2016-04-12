@@ -1,5 +1,6 @@
 package com.scalawilliam.wishlist.extract
 
+import java.io.FileWriter
 import java.net.URI
 
 import com.scalawilliam.wishlist.extraction.PageScraper
@@ -23,7 +24,7 @@ class ScraperSpec
   "Scraper" must {
 
     val startUri = new URI("http://www.amazon.co.uk/gp/registry/wishlist/1PZHU4HY3MXLI")
-    val document = Jsoup.parse(startUri.toURL, 2000)
+    val document = Jsoup.parse(startUri.toURL, 3000)
 
     val wishlistItems = PageScraper.getItems(document)
     val attributes = PageScraper.getAttributes(document)

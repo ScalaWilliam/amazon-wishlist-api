@@ -97,10 +97,7 @@ object PageScraper {
       case other => Bad(One("Could not find a title for the wishlist"))
     }
 
-    val wishlistPersonOR = doc.select("#left-nav .a-expander-prompt .a-text-bold").optionalText match {
-      case Some(text) => Good(text.trim)
-      case other => Bad(One("Could not find the person for the wishlist"))
-    }
+    val wishlistPersonO = doc.select("#left-nav .a-expander-prompt .a-text-bold").optionalText
 
     val wishlistDeliverO = doc.select(".profile.top .g-profile-stable span:nth-child(4) .a-color-base").optionalText
 
@@ -112,9 +109,9 @@ object PageScraper {
 
     val nextLinkO = doc.select("#wishlistPagination .a-last a[href]").optionalAttr("href")
 
-    withGood(wishlistTitleOR, wishlistPersonOR) {
-      (title, person) =>
-        WishlistPageAttributes(title, person, wishlistDeliverO, wishlistImageO, nextLinkO)
+    withGood(wishlistTitleOR) {
+      (title) =>
+        WishlistPageAttributes(title, wishlistPersonO, wishlistDeliverO, wishlistImageO, nextLinkO)
     }
   }
 
