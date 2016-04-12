@@ -5,7 +5,7 @@ lazy val amazonWishlistApi =
 
 lazy val amazonWishlist = (project in file("wishlist"))
   .settings(
-    libraryDependencies ++= {
+    libraryDependencies ++=
       Seq(
         "org.jsoup" % "jsoup" % "1.8.3",
         "org.apache.httpcomponents" % "httpclient" % "4.5.2",
@@ -21,7 +21,6 @@ lazy val amazonWishlist = (project in file("wishlist"))
         "org.json4s" %% "json4s-jackson" % "3.3.0",
         "org.scala-lang.modules" %% "scala-async" % "0.9.5"
       )
-    }
   )
 
 lazy val api = project
