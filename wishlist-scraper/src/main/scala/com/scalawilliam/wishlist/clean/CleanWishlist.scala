@@ -1,12 +1,12 @@
-package com.scalawilliam.wishlist.model.clean
+package com.scalawilliam.wishlist.clean
 
 import java.net.URI
 
 import com.scalawilliam.wishlist.extraction.PageScraper
 import org.apache.http.client.utils.URIBuilder
 import org.jsoup.nodes.Document
-import org.scalactic._
 import org.scalactic.Accumulation._
+import org.scalactic._
 
 case class CleanWishlist
 (

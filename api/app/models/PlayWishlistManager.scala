@@ -6,8 +6,8 @@ import javax.inject.{Inject, Singleton}
 
 import akka.actor.ActorSystem
 import akka.agent.Agent
+import com.scalawilliam.wishlist.clean.CleanWishlist
 import com.scalawilliam.wishlist.extraction.WishlistFetcherPath
-import com.scalawilliam.wishlist.model.clean.CleanWishlist
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.inject.ApplicationLifecycle

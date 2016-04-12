@@ -1,4 +1,4 @@
-package com.scalawilliam.wishlist.model.clean
+package com.scalawilliam.wishlist.clean
 
 import com.scalawilliam.wishlist.model.Image
 

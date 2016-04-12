@@ -1,5 +1,5 @@
+import com.scalawilliam.wishlist.clean.{CleanWishlistItem, CleanWishlist}
 import com.scalawilliam.wishlist.model.Image
-import com.scalawilliam.wishlist.model.clean.{CleanWishlist, CleanWishlistItem}
 import play.api.http.Writeable
 import play.api.libs.json.{JsValue, Json}
 
