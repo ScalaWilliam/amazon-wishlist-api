@@ -92,21 +92,21 @@ object PageScraper {
 
   def getAttributes(doc: Document): WishlistPageAttributes Or Every[ErrorMessage] = {
 
-    val wishlistTitleOR = doc.select(".profile.top .profile-layout-aid-top .clip-text").optionalText match {
-      case Some(text) => Good(text)
+    val wishlistTitleOR = doc.select("#wl-list-info h1").optionalText match {
+      case Some(text) => Good(text.trim)
       case other => Bad(One("Could not find a title for the wishlist"))
     }
 
-    val wishlistPersonOR = doc.select(".profile.top .g-profile-stable span:nth-child(1) .a-color-base").optionalText match {
-      case Some(text) => Good(text)
+    val wishlistPersonOR = doc.select("#left-nav .a-expander-prompt .a-text-bold").optionalText match {
+      case Some(text) => Good(text.trim)
       case other => Bad(One("Could not find the person for the wishlist"))
     }
 
     val wishlistDeliverO = doc.select(".profile.top .g-profile-stable span:nth-child(4) .a-color-base").optionalText
 
     val wishlistImageO = {
-      doc.select(".profile.top img[src][height][width]").asScala.headOption.map { image =>
-        Image(image.attr("src"), image.attr("width").toInt, image.attr("height").toInt)
+      doc.select("#list-header img[src]").asScala.headOption.map { image =>
+        image.attr("src")
       }
     }
 

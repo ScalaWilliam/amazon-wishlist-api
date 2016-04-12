@@ -72,7 +72,7 @@ case class WishlistPageAttributes
   title: String,
   person: String,
   deliverTo: Option[String],
-  image: Option[Image],
+  image: Option[String],
   nextPageRelativeLink: Option[String],
   uri: Option[String] = None
   )

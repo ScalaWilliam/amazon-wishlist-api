@@ -10,10 +10,12 @@ import scala.util.Try
  */
 package object controllers {
 
-  implicit val writesImage = Json.writes[Image]
-  implicit val writesCleanWishlistItem = Json.writes[CleanWishlistItem]
-  implicit val writesCleanWishlist = Json.writes[CleanWishlist]
-  implicit val httpWritesCleanWishlist = implicitly[Writeable[JsValue]].map(Json.toJson(_: CleanWishlist))
+  implicit val httpWritesCleanWishlist = {
+    implicit val writesImage = Json.writes[Image]
+    implicit val writesCleanWishlistItem = Json.writes[CleanWishlistItem]
+    implicit val writesCleanWishlist = Json.writes[CleanWishlist]
+    implicitly[Writeable[JsValue]].map(Json.toJson(_: CleanWishlist))
+  }
 
   type Inject = javax.inject.Inject
   type Singleton = javax.inject.Singleton
@@ -22,7 +24,7 @@ package object controllers {
 
   val Async = scala.async.Async
 
-
+  @deprecated("replace with sbt-git lookup", "")
   private[controllers] def appVersion = {
     Try {
       Option(new java.util.jar.Manifest(getClass.getClassLoader.getResourceAsStream("META-INF/MANIFEST.MF")).getMainAttributes.getValue("Git-Head-Rev"))

@@ -12,7 +12,8 @@ import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
 
 class WishlistFetcherSpec extends WordSpec with Matchers with ScalaFutures with BeforeAndAfterAll {
 
-  implicit lazy val system = ActorSystem()
+  /** http://samwrx.surge.sh/akka/2016/01/11/akkaloggingfilters.html **/
+  implicit lazy val system = ActorSystem(name = "test", classLoader = Option(getClass.getClassLoader))
 
   lazy val uriFetcher = MVStoreAsyncHttpCache(DataStoreOptions(
     databaseName = s"target${File.separator}wf.db",
@@ -34,6 +35,9 @@ class WishlistFetcherSpec extends WordSpec with Matchers with ScalaFutures with 
 
     "Not fail" in {
       resultsF.futureValue should have size 2
+    }
+    "Show something" in {
+      resultsF.value.get.get
     }
   }
 

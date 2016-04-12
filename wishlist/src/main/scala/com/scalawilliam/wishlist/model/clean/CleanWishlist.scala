@@ -2,18 +2,17 @@ package com.scalawilliam.wishlist.model.clean
 
 import com.scalawilliam.wishlist.extraction.PageScraper
 import com.scalawilliam.wishlist.extraction.pagefetcher.FetchedObject
+import com.scalawilliam.wishlist.model.Image
 import org.apache.http.client.utils.URIBuilder
 import org.scalactic._
 import org.scalactic.Accumulation._
-import com.scalawilliam.wishlist.model.{WishlistItem, WishlistPageAttributes, Image}
-import org.scalactic.ErrorMessage
 
 case class CleanWishlist
 (
   title: String,
   person: String,
   deliverTo: Option[String],
-  image: Option[Image],
+  image: Option[String],
   uri: String,
   items: List[CleanWishlistItem]
   )
