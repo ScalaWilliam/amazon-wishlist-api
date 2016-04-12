@@ -29,7 +29,7 @@ class WishlistFetcherSpec extends WordSpec with Matchers with ScalaFutures with 
   "Wishlist fetcher" must {
     import scala.concurrent.ExecutionContext.Implicits.global
     val resultsF = WishlistFetcher(
-      wishlistId = WishlistId.myWishlistId,
+      wishlistId = WishlistId.myWishlistId.wishlistId,
       uriFetcher.receive
     ).fetchOptions.fetch
 

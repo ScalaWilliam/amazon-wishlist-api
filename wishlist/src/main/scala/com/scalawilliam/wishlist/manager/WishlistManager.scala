@@ -35,9 +35,13 @@ case class WishlistManager
   }
 
   def fetchCleanWishlist(implicit executionContext: ExecutionContext, system: ActorSystem): Future[Option[CleanWishlist]] = {
-    WishlistFetcher(wishlistId, httpCache.receive).fetchOptions.fetch.map(CleanWishlist.fromFetchedObjects).map { item =>
-      item.toOption.foreach{ stuff => agt.send(Option(stuff) )}
-      item.toOption
-    }
+    WishlistFetcher(wishlistId.wishlistId, httpCache.receive)
+      .fetchOptions
+      .fetch
+      .map(CleanWishlist.fromFetchedObjects)
+      .map { item =>
+        item.toOption.foreach { stuff => agt.send(Option(stuff)) }
+        item.toOption
+      }
   }
 }

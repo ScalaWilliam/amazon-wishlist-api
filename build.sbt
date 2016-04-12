@@ -1,7 +1,17 @@
 lazy val amazonWishlistApi =
   (project in file("."))
-    .aggregate(amazonWishlist, api)
-    .dependsOn(amazonWishlist, api)
+    .aggregate(amazonWishlist, api, htmlExtractor)
+    .dependsOn(api)
+
+lazy val htmlExtractor = (project in file("html-extractor"))
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.jsoup" % "jsoup" % "1.8.3",
+      "joda-time" % "joda-time" % "2.9.3",
+      "org.joda" % "joda-convert" % "1.8.1",
+      "org.scalactic" %% "scalactic" % "2.2.6"
+    )
+  )
 
 lazy val amazonWishlist = (project in file("wishlist"))
   .settings(
@@ -22,6 +32,7 @@ lazy val amazonWishlist = (project in file("wishlist"))
         "org.scala-lang.modules" %% "scala-async" % "0.9.5"
       )
   )
+  .dependsOn(htmlExtractor)
 
 lazy val api = project
   .enablePlugins(PlayScala)

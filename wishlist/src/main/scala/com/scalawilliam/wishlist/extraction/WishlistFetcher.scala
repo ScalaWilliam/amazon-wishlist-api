@@ -3,28 +3,20 @@ package com.scalawilliam.wishlist.extraction
 import java.net.URI
 
 import com.scalawilliam.wishlist.extraction.pagefetcher.{FetchedObject, RecursiveFetchOptions}
-import com.scalawilliam.wishlist.manager.WishlistId
+import org.jsoup.Jsoup
 
 import scala.concurrent.Future
 
-case class WishlistFetcher(wishlistId: WishlistId, fetchURI: URI => Future[String]) {
+case class WishlistFetcher(wishlistId: String, fetchURI: URI => Future[String]) {
 
-  def rootPath = new URI("http://www.amazon.co.uk")
-
-  def entryUri = new URI(s"$rootPath/gp/registry/wishlist/${wishlistId.wishlistId}")
-
-  def getNextUri(fetchedObject: FetchedObject): Option[URI] = {
-    for {
-      attributes <- PageScraper.getAttributes(fetchedObject.document).toOption
-      nextPageLink <- attributes.nextPageRelativeLink
-    } yield new URI(s"$rootPath$nextPageLink")
+  def fetchOptions = {
+    val wfp = WishlistFetcherPath(wishlistId)
+    RecursiveFetchOptions(
+      startingURI = wfp.entryUri,
+      fetchFunction = fetchURI,
+      maximumFetches = 10,
+      nextUri = { f: FetchedObject => wfp.getNextUri(Jsoup.parse(f.body)) }
+    )
   }
-
-  def fetchOptions = RecursiveFetchOptions(
-    startingURI = entryUri,
-    fetchFunction = fetchURI,
-    maximumFetches = 10,
-    nextUri = getNextUri _
-  )
 
 }
